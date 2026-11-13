@@ -19,7 +19,7 @@ const RelatedProducts = ({ category, subCategory }) => {
 
 			setRelated(productsCopy.slice(0, 5));
 		}
-	}, [products]);
+	}, [products]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<div className="my-24">

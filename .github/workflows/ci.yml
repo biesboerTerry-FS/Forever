@@ -1,0 +1,166 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-lint:
+    name: Build, lint & Lighthouse
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # ---------- Backend ----------
+      - name: Install backend dependencies
+        working-directory: eCommerce/backend
+        run: npm ci
+
+      # ---------- Storefront ----------
+      - name: Install storefront dependencies
+        working-directory: eCommerce/frontend
+        run: npm ci
+
+      - name: Lint storefront
+        working-directory: eCommerce/frontend
+        run: npm run lint
+
+      - name: Build storefront
+        working-directory: eCommerce/frontend
+        env:
+          VITE_BACKEND_URL: https://api.example.com
+          VITE_SITE_URL: https://forever.example.com
+        run: npm run build
+
+      # ---------- Admin ----------
+      - name: Install admin dependencies
+        working-directory: eCommerce/admin
+        run: npm ci
+
+      - name: Lint admin
+        working-directory: eCommerce/admin
+        run: npm run lint
+
+      - name: Build admin
+        working-directory: eCommerce/admin
+        env:
+          VITE_BACKEND_URL: https://api.example.com
+        run: npm run build
+
+      # ---------- Lighthouse (storefront accessibility/perf/SEO smoke) ----------
+      - name: Serve storefront build
+        working-directory: eCommerce/frontend
+        run: |
+          npx --yes serve@14 dist -s -l 4173 &
+          sleep 2
+
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://localhost:4173/
+            http://localhost:4173/collection
+            http://localhost:4173/login
+          configPath: ./eCommerce/frontend/lighthouserc.json
+          uploadArtifacts: true
+          temporaryPublicStorage: false
+
+  accessibility-e2e:
+    name: Axe accessibility (E2E)
+    runs-on: ubuntu-latest
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install backend dependencies
+        working-directory: eCommerce/backend
+        run: npm ci
+
+      - name: Install storefront dependencies
+        working-directory: eCommerce/frontend
+        run: npm ci
+
+      - name: Install admin dependencies
+        working-directory: eCommerce/admin
+        run: npm ci
+
+      - name: Install E2E dependencies
+        working-directory: eCommerce/e2e
+        run: npm ci
+
+      - name: Create backend env
+        working-directory: eCommerce/backend
+        run: |
+          cat > .env <<'EOF'
+          PORT=4001
+          MONGODB_URI=mongodb://127.0.0.1:27017
+          JWT_SECRET=ci-secret
+          ADMIN_EMAIL=admin@admin.com
+          ADMIN_PASSWORD=admin
+          CLOUDINARY_NAME=demo
+          CLOUDINARY_API_KEY=demo
+          CLOUDINARY_SECRET_KEY=demo
+          ALLOW_DEMO_OAUTH=true
+          EOF
+
+      - name: Seed database (offline)
+        working-directory: eCommerce/backend
+        run: npm run seed:offline
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017
+
+      - name: Start backend
+        working-directory: eCommerce/backend
+        run: node server.js &
+        env:
+          MONGODB_URI: mongodb://127.0.0.1:27017
+          JWT_SECRET: ci-secret
+          ADMIN_EMAIL: admin@admin.com
+          ADMIN_PASSWORD: admin
+
+      - name: Start storefront
+        working-directory: eCommerce/frontend
+        run: npm run dev -- --host 0.0.0.0 &
+        env:
+          VITE_BACKEND_URL: http://localhost:4001
+
+      - name: Start admin
+        working-directory: eCommerce/admin
+        run: npm run dev -- --host 0.0.0.0 &
+        env:
+          VITE_BACKEND_URL: http://localhost:4001
+
+      - name: Wait for services
+        run: |
+          for i in {1..60}; do
+            curl -fsS http://localhost:4001/ >/dev/null 2>&1 && curl -fsS http://localhost:5178/ >/dev/null 2>&1 && exit 0
+            sleep 2
+          done
+          echo "Services did not start in time" >&2
+          exit 1
+
+      - name: Run axe accessibility tests
+        working-directory: eCommerce/e2e
+        run: npx mocha tests/accessibility.spec.js
+        env:
+          FRONTEND_URL: http://localhost:5178
+          ADMIN_URL: http://localhost:5179
+          API_URL: http://localhost:4001

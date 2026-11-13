@@ -7,6 +7,9 @@ import {
 	userOrders,
 	updateStatus,
 	verifyStripe,
+	verifyRazorpay,
+	stripeWebhook,
+	razorpayWebhook,
 } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
@@ -28,5 +31,9 @@ orderRouter.post("/userorders", authUser, userOrders);
 // Verify payment
 orderRouter.post("/verifyStripe", authUser, verifyStripe);
 orderRouter.post("/verifyRazorpay", authUser, verifyRazorpay);
+
+// Payment provider webhooks (no auth token; signatures are verified instead)
+orderRouter.post("/webhook/stripe", stripeWebhook);
+orderRouter.post("/webhook/razorpay", razorpayWebhook);
 
 export default orderRouter;

@@ -29,3 +29,69 @@ a.active hr {
 		color: white;
 	}
 }
+
+/* Visible keyboard focus for every interactive element. Mouse users don't
+   see it, keyboard users can always tell where they are. */
+:focus-visible {
+	outline: 2px solid #111827;
+	outline-offset: 2px;
+}
+
+html.dark :focus-visible {
+	outline-color: #f9fafb;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}
+
+/* ---------- Dark mode ---------- */
+
+html.dark {
+	background-color: #030712;
+}
+
+html.dark body {
+	background-color: inherit;
+}
+
+/* Default (uncoloured) borders and dividers */
+html.dark :where(.border, .border-t, .border-b, .border-l, .border-r) {
+	border-color: #1f2937;
+}
+
+html.dark :where(.divide-y > :not([hidden]) ~ :not([hidden])) {
+	border-color: #1f2937;
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+	background-color: #111827;
+	color: #e5e7eb;
+	border-color: #374151;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+	color: #6b7280;
+}
+
+html.dark option {
+	background-color: #111827;
+	color: #e5e7eb;
+}
+
+@media (max-width: 640px) {
+	html.dark a.active {
+		background-color: #f3f4f6;
+		color: #111827;
+	}
+}

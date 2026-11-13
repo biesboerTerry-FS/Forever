@@ -31,6 +31,14 @@ const orderSchema = new mongoose.Schema({
 		required: true,
 		default: false,
 	},
+	emailSent: {
+		type: Boolean,
+		default: false,
+	},
+	paymentSessionId: {
+		type: String,
+		default: null,
+	},
 	date: {
 		type: Number,
 		required: true,

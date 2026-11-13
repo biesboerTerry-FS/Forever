@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
@@ -35,6 +35,12 @@ const PlaceOrder = () => {
 		const value = event.target.value;
 		setFormData((data) => ({ ...data, [name]: value }));
 	};
+
+	// Checkout requires an account; send signed-out shoppers to login and
+	// bring them straight back afterwards.
+	useEffect(() => {
+		if (!token) navigate("/login?redirect=/place-order");
+	}, [token, navigate]);
 
 	const initPay = (order) => {
 		const options = {
@@ -162,7 +168,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="firstName"
 						value={formData.firstName}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="text"
 						placeholder="First name"
 					/>
@@ -171,7 +177,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="lastName"
 						value={formData.lastName}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="text"
 						placeholder="Last name"
 					/>
@@ -181,7 +187,7 @@ const PlaceOrder = () => {
 					onChange={onChangeHandler}
 					name="email"
 					value={formData.email}
-					className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+					className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 					type="email"
 					placeholder="Email address"
 				/>
@@ -190,7 +196,7 @@ const PlaceOrder = () => {
 					onChange={onChangeHandler}
 					name="street"
 					value={formData.street}
-					className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+					className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 					type="text"
 					placeholder="Street"
 				/>
@@ -200,7 +206,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="city"
 						value={formData.city}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="text"
 						placeholder="City"
 					/>
@@ -208,7 +214,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="state"
 						value={formData.state}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="text"
 						placeholder="State"
 					/>
@@ -219,7 +225,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="zipcode"
 						value={formData.zipcode}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="number"
 						placeholder="Zipcode"
 					/>
@@ -228,7 +234,7 @@ const PlaceOrder = () => {
 						onChange={onChangeHandler}
 						name="country"
 						value={formData.country}
-						className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+						className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 						type="text"
 						placeholder="Country"
 					/>
@@ -238,7 +244,7 @@ const PlaceOrder = () => {
 					onChange={onChangeHandler}
 					name="phone"
 					value={formData.phone}
-					className="border border-gray-300 rounded py-1.5 px-3.5 w-full"
+					className="border border-gray-300 dark:border-gray-700 rounded py-1.5 px-3.5 w-full"
 					type="number"
 					placeholder="Phone"
 				/>
@@ -246,63 +252,72 @@ const PlaceOrder = () => {
 
 			{/* ------------- Right Side ------------------ */}
 			<div className="mt-8">
-				<div className="mt-8 min-w-80">
+				<div className="mt-8 w-full sm:min-w-80">
 					<CartTotal />
 				</div>
 
 				<div className="mt-12">
 					<Title text1={"PAYMENT"} text2={"METHOD"} />
 					{/* --------------- Payment Method Selection ------------- */}
-					<div className="flex flex-col gap-3 lg:flex-row">
-						<div
+					<div className="flex flex-col gap-3 lg:flex-row" role="radiogroup" aria-label="Payment method">
+						<button
+							type="button"
 							onClick={() => setMethod("stripe")}
-							className="flex items-center gap-3 p-2 px-3 border cursor-pointer"
+							aria-checked={method === "stripe"}
+							role="radio"
+							className="flex items-center gap-3 p-2 px-3 text-left border"
 						>
-							<p
+							<span
 								className={`min-w-3.5 h-3.5 border rounded-full ${
 									method === "stripe" ? "bg-green-400" : ""
 								}`}
-							></p>
+							/>
 							<img
 								className="h-5 mx-4"
 								src={assets.stripe_logo}
-								alt=""
+								alt="Stripe"
 							/>
-						</div>
-						<div
+						</button>
+						<button
+							type="button"
 							onClick={() => setMethod("razorpay")}
-							className="flex items-center gap-3 p-2 px-3 border cursor-pointer"
+							aria-checked={method === "razorpay"}
+							role="radio"
+							className="flex items-center gap-3 p-2 px-3 text-left border"
 						>
-							<p
+							<span
 								className={`min-w-3.5 h-3.5 border rounded-full ${
 									method === "razorpay" ? "bg-green-400" : ""
 								}`}
-							></p>
+							/>
 							<img
 								className="h-5 mx-4"
 								src={assets.razorpay_logo}
-								alt=""
+								alt="Razorpay"
 							/>
-						</div>
-						<div
+						</button>
+						<button
+							type="button"
 							onClick={() => setMethod("cod")}
-							className="flex items-center gap-3 p-2 px-3 border cursor-pointer"
+							aria-checked={method === "cod"}
+							role="radio"
+							className="flex items-center gap-3 p-2 px-3 text-left border"
 						>
-							<p
+							<span
 								className={`min-w-3.5 h-3.5 border rounded-full ${
 									method === "cod" ? "bg-green-400" : ""
 								}`}
-							></p>
-							<p className="mx-4 text-sm font-medium text-gray-500">
+							/>
+							<span className="mx-4 text-sm font-medium text-gray-500 dark:text-gray-400">
 								CASH ON DELIVERY
-							</p>
-						</div>
+							</span>
+						</button>
 					</div>
 
 					<div className="w-full mt-8 text-end">
 						<button
 							type="submit"
-							className="px-16 py-3 text-sm text-white bg-black"
+							className="px-16 py-3 text-sm text-white dark:text-gray-900 bg-black dark:bg-white"
 						>
 							PLACE ORDER
 						</button>

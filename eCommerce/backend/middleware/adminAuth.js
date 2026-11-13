@@ -4,18 +4,22 @@ const adminAuth = async (request, response, next) => {
 	try {
 		const { token } = request.headers;
 		if (!token) {
-			return response.json({
+			return response.status(401).json({
 				success: false,
 				message: "Not authorized. Please try again.",
 			});
 		}
-		const tokenDecode = jwt.verify(token, process.env.JWT_SECRET);
 
+		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+		// Admin tokens are scoped with a role claim so the password never ends
+		// up inside the token payload.
 		if (
-			tokenDecode !==
-			process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD
+			!decoded ||
+			typeof decoded !== "object" ||
+			decoded.role !== "admin"
 		) {
-			return response.json({
+			return response.status(401).json({
 				success: false,
 				message: "Not authorized. Please try again.",
 			});
@@ -23,8 +27,7 @@ const adminAuth = async (request, response, next) => {
 
 		next();
 	} catch (error) {
-		console.log(error);
-		response.json({
+		response.status(401).json({
 			success: false,
 			message: error.message,
 		});

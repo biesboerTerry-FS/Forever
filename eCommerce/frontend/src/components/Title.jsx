@@ -3,10 +3,10 @@ import React from "react";
 const Title = ({ text1, text2 }) => {
 	return (
 		<div className="inline-flex items-center gap-2 mb-3">
-			<p className="text-gray-500">
-				{text1} <span className="font-medium text-gray-700">{text2}</span>
+			<p className="text-gray-500 dark:text-gray-400">
+				{text1} <span className="font-medium text-gray-700 dark:text-gray-200">{text2}</span>
 			</p>
-			<p className="w-8 sm:w-12h-[1px] sm:h-[2px] bg-gray-700"></p>
+			<p className="w-8 sm:w-12h-[1px] sm:h-[2px] bg-gray-700 dark:bg-gray-300"></p>
 		</div>
 	);
 };

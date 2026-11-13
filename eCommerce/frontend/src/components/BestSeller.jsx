@@ -16,9 +16,9 @@ const BestSeller = () => {
 		<div className="my-10">
 			<div className="py-8 text-3xl text-center">
 				<Title text1={"BEST"} text2={"SELLERS"} />
-				<p className="w-3/4 m-auto text-xs text-gray-600 sm:tecxt-sm md:text-base">
-					Lorem ipsum is simply dummy text of the printing and typesetting
-					industry. Lorem ipsum is
+				<p className="w-3/4 m-auto text-xs text-gray-600 dark:text-gray-300 sm:text-sm md:text-base">
+					The pieces our customers reach for again and again — timeless
+					staples loved for their fit, fabric and versatility.
 				</p>
 			</div>
 			{/* Rendering products */}

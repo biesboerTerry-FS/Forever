@@ -19,6 +19,30 @@ const userSchema = new mongoose.Schema(
 			type: Object,
 			default: {},
 		},
+		wishlist: {
+			type: Array,
+			default: [],
+		},
+		picture: {
+			type: String,
+			default: "",
+		},
+		provider: {
+			type: String,
+			default: "local",
+		},
+		resetToken: {
+			type: String,
+			default: null,
+		},
+		resetTokenExpiry: {
+			type: Date,
+			default: null,
+		},
+		pushTokens: {
+			type: [String],
+			default: [],
+		},
 	},
 	{ minimize: false }
 );

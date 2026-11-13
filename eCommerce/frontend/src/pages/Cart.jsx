@@ -3,9 +3,10 @@ import { ShopContext } from "../context/ShopContext";
 import Title from "../components/Title";
 import { assets } from "../assets/assets";
 import CartTotal from "../components/CartTotal";
+import { imageUrl } from "../utils/image";
 
 const Cart = () => {
-	const { products, currency, cartItems, updateQuantity, navigate } =
+	const { products, currency, cartItems, updateQuantity, navigate, token } =
 		useContext(ShopContext);
 
 	const [cartData, setCartData] = useState([]);
@@ -42,13 +43,19 @@ const Cart = () => {
 					return (
 						<div
 							key={index}
-							className="py-4 border-t border-b text-gray-700 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
+							className="py-4 border-t border-b text-gray-700 dark:text-gray-200 grid grid-cols-[4fr_0.5fr_0.5fr] sm:grid-cols-[4fr_2fr_0.5fr] items-center gap-4"
 						>
 							<div className="flex items-start gap-6">
 								<img
 									className="w-16 sm:w-20"
-									src={productData.image[0]}
-									alt=""
+									src={imageUrl(productData.image[0], 160)}
+									alt={productData.name}
+									loading="lazy"
+									decoding="async"
+									onError={(e) => {
+										e.currentTarget.onerror = null;
+										e.currentTarget.style.visibility = "hidden";
+									}}
 								/>
 								<div>
 									<p className="text-xs font-medium sm:text-lg">
@@ -58,7 +65,7 @@ const Cart = () => {
 										<p>
 											{currency} {productData.price}
 										</p>
-										<p className="px-2 border sm:px-3 sm:py-1 bg-slate-50">
+										<p className="px-2 border sm:px-3 sm:py-1 bg-slate-50 dark:bg-gray-800">
 											{item.size}
 										</p>
 									</div>
@@ -77,14 +84,21 @@ const Cart = () => {
 								className="px-1 py-1 border max-w-10 sm:max-w-20 sm:px-2"
 								type="number"
 								min={1}
+								aria-label={`Quantity for ${productData.name}, size ${item.size}`}
 								defaultValue={item.quantity}
 							/>
-							<img
+							<button
+								type="button"
 								onClick={() => updateQuantity(item._id, item.size, 0)}
-								className="w-4 mr-4 cursor-pointer sm:w-5"
-								src={assets.bin_icon}
-								alt=""
-							/>
+								aria-label={`Remove ${productData.name}, size ${item.size} from cart`}
+								className="p-1"
+							>
+								<img
+									className="w-4 sm:w-5 dark:invert"
+									src={assets.bin_icon}
+									alt=""
+								/>
+							</button>
 						</div>
 					);
 				})}
@@ -94,8 +108,14 @@ const Cart = () => {
 					<CartTotal />
 					<div className="w-full text-end">
 						<button
-							onClick={() => navigate("/place-order")}
-							className="px-8 py-3 my-8 text-sm text-white bg-black"
+							onClick={() =>
+								navigate(
+									token
+										? "/place-order"
+										: "/login?redirect=/place-order"
+								)
+							}
+							className="px-8 py-3 my-8 text-sm text-white dark:text-gray-900 bg-black dark:bg-white"
 						>
 							PROCEED TO CHECKOUT
 						</button>

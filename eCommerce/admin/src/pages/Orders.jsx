@@ -51,18 +51,22 @@ const Orders = ({ token }) => {
 
 	useEffect(() => {
 		fetchAllOrders();
-	}, [token]);
+	}, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<div>
-			<h3>Orders</h3>
+			<h3 className="mb-4 text-lg font-medium text-gray-800 dark:text-gray-100">Orders</h3>
 			<div>
 				{orders.map((order, index) => (
 					<div
-						className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 lg:my-3 text-xs sm:text-sm text-gray-700"
+						className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start p-5 my-3 text-xs bg-white rounded-2xl shadow-sm sm:text-sm text-gray-700 md:p-6 dark:bg-gray-900 dark:text-gray-300 dark:shadow-none dark:ring-1 dark:ring-gray-800"
 						key={index}
 					>
-						<img className="w-12z" src={assets.parcel_icon} alt="" />
+						<img
+							className="w-12 dark:invert"
+							src={assets.parcel_icon}
+							alt="Parcel"
+						/>
 						<div>
 							<div>
 								{order.items.map((item, index) => {
@@ -83,7 +87,7 @@ const Orders = ({ token }) => {
 									}
 								})}
 							</div>
-							<p className="mb-2 font-medium mt--3">
+			<p className="mb-2 font-medium mt-3">
 								{order.address.firstName + " " + order.address.lastName}
 							</p>
 							<div>
@@ -118,7 +122,7 @@ const Orders = ({ token }) => {
 						<select
 							onChange={(event) => statusHandler(event, order._id)}
 							value={order.status}
-							className="p-2 font-semibold"
+							className="p-2 text-sm font-medium bg-white border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
 						>
 							<option value="Order Placed">Order Placed</option>
 							<option value="Packing">Packing</option>

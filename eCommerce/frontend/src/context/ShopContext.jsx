@@ -14,6 +14,23 @@ const ShopContextProvider = (props) => {
 	const [cartItems, setCartItems] = useState({});
 	const [products, setProducts] = useState([]);
 	const [token, setToken] = useState("");
+	const [wishlist, setWishlist] = useState([]);
+	const [dark, setDark] = useState(() => {
+		try {
+			const stored = localStorage.getItem("theme");
+			if (stored) return stored === "dark";
+			return window.matchMedia("(prefers-color-scheme: dark)").matches;
+		} catch {
+			return false;
+		}
+	});
+	const [user, setUser] = useState(() => {
+		try {
+			return JSON.parse(localStorage.getItem("user")) || null;
+		} catch {
+			return null;
+		}
+	});
 	const navigate = useNavigate();
 
 	const addToCart = async (itemId, size) => {
@@ -142,16 +159,78 @@ const ShopContextProvider = (props) => {
 		}
 	};
 
+	const getWishlist = async (token) => {
+		try {
+			const response = await axios.post(
+				backendUrl + "/api/wishlist/get",
+				{},
+				{ headers: { token } }
+			);
+			if (response.data.success) setWishlist(response.data.wishlist);
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	const isWishlisted = (itemId) => wishlist.includes(String(itemId));
+
+	// Toggle a product in the signed-in user's wishlist.
+	const toggleWishlist = async (itemId) => {
+		if (!token) {
+			toast.info("Log in to save items to your wishlist");
+			navigate("/login");
+			return;
+		}
+		const id = String(itemId);
+		const wasSaved = wishlist.includes(id);
+		// Optimistic update so the heart responds instantly.
+		setWishlist((prev) =>
+			wasSaved ? prev.filter((x) => x !== id) : [...prev, id]
+		);
+		try {
+			const response = await axios.post(
+				backendUrl + "/api/wishlist/toggle",
+				{ productId: id },
+				{ headers: { token } }
+			);
+			if (response.data.success) {
+				setWishlist(response.data.wishlist);
+				toast.success(response.data.message);
+			}
+		} catch (error) {
+			console.log(error);
+			setWishlist((prev) =>
+				wasSaved ? [...prev, id] : prev.filter((x) => x !== id)
+			);
+			toast.error(error.message);
+		}
+	};
+
+	useEffect(() => {
+		document.documentElement.classList.toggle("dark", dark);
+		document.documentElement.style.colorScheme = dark ? "dark" : "light";
+		localStorage.setItem("theme", dark ? "dark" : "light");
+	}, [dark]);
+
+	const toggleTheme = () => setDark((value) => !value);
+
 	useEffect(() => {
 		getProductsData();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
 		if (!token && localStorage.getItem("token")) {
 			setToken(localStorage.getItem("token"));
-			getUserCart(localStorage.getItem("token"));
+			return;
 		}
-	}, []);
+		if (token) {
+			getUserCart(token);
+			getWishlist(token);
+		} else {
+			setWishlist([]);
+		}
+	}, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const value = {
 		products,
@@ -171,6 +250,14 @@ const ShopContextProvider = (props) => {
 		backendUrl,
 		token,
 		setToken,
+		user,
+		setUser,
+		wishlist,
+		setWishlist,
+		toggleWishlist,
+		isWishlisted,
+		dark,
+		toggleTheme,
 	};
 
 	return (

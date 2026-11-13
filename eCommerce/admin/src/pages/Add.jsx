@@ -4,6 +4,57 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 
+// Keep uploads well under the API's per-file limit and Vercel's request body
+// cap. Photos are resized in the browser so slow connections finish quickly
+// and product pages load less image data.
+const MAX_UPLOAD_BYTES = 800 * 1024;
+const MAX_DIMENSION = 1200;
+
+const compressImage = (file) =>
+	new Promise((resolve) => {
+		if (!file || !file.type.startsWith("image/")) return resolve(file);
+
+		// Small files are already fine; skip the canvas round-trip.
+		if (file.size <= 400 * 1024) return resolve(file);
+
+		const image = new Image();
+		const objectUrl = URL.createObjectURL(file);
+
+		const cleanup = () => URL.revokeObjectURL(objectUrl);
+
+		image.onload = () => {
+			cleanup();
+			const scale = Math.min(
+				1,
+				MAX_DIMENSION / Math.max(image.width, image.height)
+			);
+			const canvas = document.createElement("canvas");
+			canvas.width = Math.round(image.width * scale);
+			canvas.height = Math.round(image.height * scale);
+			const context = canvas.getContext("2d");
+			if (!context) return resolve(file);
+			context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+			canvas.toBlob(
+				(blob) => {
+					// If compression didn't help (or the browser lacks WebP),
+					// keep the original rather than making things worse.
+					if (!blob || blob.type !== "image/webp") return resolve(file);
+					if (blob.size >= file.size) return resolve(file);
+					const name = file.name.replace(/\.[^.]+$/, "") + ".webp";
+					resolve(new File([blob], name, { type: "image/webp" }));
+				},
+				"image/webp",
+				0.8
+			);
+		};
+		image.onerror = () => {
+			cleanup();
+			resolve(file);
+		};
+		image.src = objectUrl;
+	});
+
 const Add = ({ token }) => {
 	// State variables to store images
 	const [image1, setImage1] = useState(false);
@@ -20,6 +71,25 @@ const Add = ({ token }) => {
 	const [subCategory, setSubcategory] = useState("");
 	const [bestseller, setBestseller] = useState(false);
 	const [sizes, setSizes] = useState([]);
+
+	const handleImageChange = async (event, setter) => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+
+		if (!file.type.startsWith("image/")) {
+			toast.error("Please choose an image file.");
+			event.target.value = "";
+			return;
+		}
+
+		const prepared = await compressImage(file);
+		if (prepared.size > MAX_UPLOAD_BYTES) {
+			toast.error("That image is still too large after compression. Try a smaller one.");
+			event.target.value = "";
+			return;
+		}
+		setter(prepared);
+	};
 
 	// Prevents reload when form is submitted
 	const onSubmitHandler = async (e) => {
@@ -40,7 +110,7 @@ const Add = ({ token }) => {
 			image2 && formData.append("image2", image2);
 			image3 && formData.append("image3", image3);
 			image4 && formData.append("image4", image4);
-			image4 && formData.append("image5", image5);
+			image5 && formData.append("image5", image5);
 
 			// send formdata to api
 			const response = await axios.post(
@@ -72,7 +142,7 @@ const Add = ({ token }) => {
 	return (
 		<form
 			onSubmit={onSubmitHandler}
-			className="flex flex-col items-start w-full gap-3"
+			className="flex flex-col items-start w-full max-w-2xl gap-4 p-6 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800"
 		>
 			<div>
 				<p className="mb-2">Upload image(s)</p>
@@ -80,86 +150,91 @@ const Add = ({ token }) => {
 					{/* Product images */}
 					<label htmlFor="image1">
 						<img
-							className="w-20"
+							className="object-cover w-20 rounded-lg"
 							src={
 								!image1
 									? assets.upload_area
 									: URL.createObjectURL(image1)
 							}
-							alt=""
+							alt={image1 ? "Selected product image 1" : "Upload product image 1"}
 						/>
 						<input
-							onChange={(e) => setImage1(e.target.files[0])}
+							onChange={(e) => handleImageChange(e, setImage1)}
 							type="file"
 							id="image1"
+							accept="image/*"
 							hidden
 						/>
 					</label>
 					<label htmlFor="image2">
 						<img
-							className="w-20"
+							className="object-cover w-20 rounded-lg"
 							src={
 								!image2
 									? assets.upload_area
 									: URL.createObjectURL(image2)
 							}
-							alt=""
+							alt={image2 ? "Selected product image 2" : "Upload product image 2"}
 						/>
 						<input
-							onChange={(e) => setImage2(e.target.files[0])}
+							onChange={(e) => handleImageChange(e, setImage2)}
 							type="file"
 							id="image2"
+							accept="image/*"
 							hidden
 						/>
 					</label>
 					<label htmlFor="image3">
 						<img
-							className="w-20"
+							className="object-cover w-20 rounded-lg"
 							src={
 								!image3
 									? assets.upload_area
 									: URL.createObjectURL(image3)
 							}
-							alt=""
+							alt={image3 ? "Selected product image 3" : "Upload product image 3"}
 						/>
 						<input
-							onChange={(e) => setImage3(e.target.files[0])}
+							onChange={(e) => handleImageChange(e, setImage3)}
 							type="file"
 							id="image3"
+							accept="image/*"
 							hidden
 						/>
 					</label>
 					<label htmlFor="image4">
 						<img
-							className="w-20"
+							className="object-cover w-20 rounded-lg"
 							src={
 								!image4
 									? assets.upload_area
-									: URL.createObjectURL(image3)
+									: URL.createObjectURL(image4)
 							}
-							alt=""
+							alt={image4 ? "Selected product image 4" : "Upload product image 4"}
 						/>
 						<input
-							onChange={(e) => setImage4(e.target.files[0])}
+							onChange={(e) => handleImageChange(e, setImage4)}
 							type="file"
 							id="image4"
+							accept="image/*"
 							hidden
 						/>
 					</label>
 					<label htmlFor="image5">
 						<img
-							className="w-20"
+							className="object-cover w-20 rounded-lg"
 							src={
 								!image5
 									? assets.upload_area
-									: URL.createObjectURL(image3)
+									: URL.createObjectURL(image5)
 							}
-							alt=""
+							alt={image5 ? "Selected product image 5" : "Upload product image 5"}
 						/>
 						<input
-							onChange={(e) => setImage5(e.target.files[0])}
+							onChange={(e) => handleImageChange(e, setImage5)}
 							type="file"
 							id="image5"
+							accept="image/*"
 							hidden
 						/>
 					</label>
@@ -196,7 +271,7 @@ const Add = ({ token }) => {
 					<select
 						onChange={(e) => setCategory(e.target.value)}
 						value={category}
-						className="w-full px-3 py-2 text-gray-500"
+						className="w-full px-3 py-2 text-gray-500 dark:text-gray-300"
 					>
 						<option value="" className="disabled">
 							Select option
@@ -212,7 +287,7 @@ const Add = ({ token }) => {
 					<select
 						onChange={(e) => setSubcategory(e.target.value)}
 						value={subCategory}
-						className="w-full px-3 py-2 text-gray-500"
+						className="w-full px-3 py-2 text-gray-500 dark:text-gray-300"
 					>
 						<option value="" className="disabled">
 							Select option
@@ -250,8 +325,8 @@ const Add = ({ token }) => {
 					>
 						<p
 							className={`${
-								sizes.includes("S") ? "bg-pink-100" : "bg-slate-200"
-							}  px-3 py-1 cursor-pointer `}
+								sizes.includes("S") ? "bg-pink-100 dark:bg-pink-500/25 dark:text-pink-100" : "bg-slate-200 dark:bg-gray-800"
+							}  px-3 py-1 rounded-lg cursor-pointer select-none transition-colors `}
 						>
 							S
 						</p>
@@ -267,8 +342,8 @@ const Add = ({ token }) => {
 					>
 						<p
 							className={`${
-								sizes.includes("M") ? "bg-pink-100" : "bg-slate-200"
-							}  px-3 py-1 cursor-pointer`}
+								sizes.includes("M") ? "bg-pink-100 dark:bg-pink-500/25 dark:text-pink-100" : "bg-slate-200 dark:bg-gray-800"
+							}  px-3 py-1 rounded-lg cursor-pointer select-none transition-colors`}
 						>
 							M
 						</p>
@@ -284,8 +359,8 @@ const Add = ({ token }) => {
 					>
 						<p
 							className={`${
-								sizes.includes("L") ? "bg-pink-100" : "bg-slate-200"
-							}  px-3 py-1 cursor-pointer`}
+								sizes.includes("L") ? "bg-pink-100 dark:bg-pink-500/25 dark:text-pink-100" : "bg-slate-200 dark:bg-gray-800"
+							}  px-3 py-1 rounded-lg cursor-pointer select-none transition-colors`}
 						>
 							L
 						</p>
@@ -301,8 +376,8 @@ const Add = ({ token }) => {
 					>
 						<p
 							className={`${
-								sizes.includes("XL") ? "bg-pink-100" : "bg-slate-200"
-							}  px-3 py-1 cursor-pointer`}
+								sizes.includes("XL") ? "bg-pink-100 dark:bg-pink-500/25 dark:text-pink-100" : "bg-slate-200 dark:bg-gray-800"
+							}  px-3 py-1 rounded-lg cursor-pointer select-none transition-colors`}
 						>
 							XL
 						</p>
@@ -318,8 +393,8 @@ const Add = ({ token }) => {
 					>
 						<p
 							className={`${
-								sizes.includes("XXL") ? "bg-pink-100" : "bg-slate-200"
-							}  px-3 py-1 cursor-pointer`}
+								sizes.includes("XXL") ? "bg-pink-100 dark:bg-pink-500/25 dark:text-pink-100" : "bg-slate-200 dark:bg-gray-800"
+							}  px-3 py-1 rounded-lg cursor-pointer select-none transition-colors`}
 						>
 							XXL
 						</p>
@@ -339,7 +414,10 @@ const Add = ({ token }) => {
 				</label>
 			</div>
 
-			<button className="py-3 mt-4 text-white bg-black w-28" type="submit">
+			<button
+				className="px-8 py-3 mt-4 text-sm font-medium text-white bg-gray-900 rounded-lg transition-colors hover:bg-gray-700 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+				type="submit"
+			>
 				ADD
 			</button>
 		</form>

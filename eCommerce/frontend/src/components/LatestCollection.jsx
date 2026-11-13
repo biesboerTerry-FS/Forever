@@ -15,9 +15,9 @@ const LatestCollection = () => {
 		<div className="my-10">
 			<div className="py-10 text-3xl text-center">
 				<Title text1={"LATEST"} text2={"COLLECTIONS"} />
-				<p className="w-3/4 m-auto text-xs text-gray-600 sm:text-base">
-					Lorem ipsum is simply dummy text of the printing and typesetting
-					industry. Lorem ipsum is
+				<p className="w-3/4 m-auto text-xs text-gray-600 dark:text-gray-300 sm:text-base">
+					Fresh from the studio: this season's newest arrivals in soft
+					cottons, relaxed tailoring and everyday essentials.
 				</p>
 			</div>
 			{/* Rendering products */}

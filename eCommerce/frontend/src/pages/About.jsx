@@ -14,9 +14,9 @@ const About = () => {
 				<img
 					className="w-full md:max-w-[450px]"
 					src={assets.about_img}
-					alt=""
+					alt="Clothing on a rack in the Forever studio"
 				/>
-				<div className="flex flex-col justify-center gap-6 text-gray-600 md:w-2/4">
+				<div className="flex flex-col justify-center gap-6 text-gray-600 dark:text-gray-300 md:w-2/4">
 					<p>
 						Forever was born out of a passion for innovation and a desire
 						to revolutionize the way people shop online. Our journey began
@@ -31,7 +31,7 @@ const About = () => {
 						and home essentials, we offer an extensive collection sourced
 						from trusted brands and suppliers.
 					</p>
-					<b className="text-gray-800">Our Vision</b>
+					<b className="text-gray-800 dark:text-gray-100">Our Vision</b>
 					<p>
 						Our mission at Forever is to empower customers with choice,
 						convenience, and confidence. We're dedicated to providing a
@@ -47,7 +47,7 @@ const About = () => {
 			<div className="flex flex-col mb-20 text-sm md:flex-row">
 				<div className="flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20">
 					<b>Quality Assurance:</b>
-					<p className="text-gray-600">
+					<p className="text-gray-600 dark:text-gray-300">
 						We meticulously select and vet each product to ensure it meets
 						our stringent quality standards.
 					</p>
@@ -55,17 +55,17 @@ const About = () => {
 
 				<div className="flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20">
 					<b>Convenience:</b>
-					<p className="text-gray-600">
+					<p className="text-gray-600 dark:text-gray-300">
 						With our user-friendly interface and hassle-free ordering
-						process, shopping has bever been easier.
+						process, shopping has never been easier.
 					</p>
 				</div>
 
 				<div className="flex flex-col gap-5 px-10 py-8 border md:px-16 sm:py-20">
 					<b>Exceptional Customer Service:</b>
-					<p className="text-gray-600">
+					<p className="text-gray-600 dark:text-gray-300">
 						Our team of dedicated professionals is here to assist you all
-						the way, ensuring your satidfaction is our top priority.
+						the way, ensuring your satisfaction is our top priority.
 					</p>
 				</div>
 			</div>

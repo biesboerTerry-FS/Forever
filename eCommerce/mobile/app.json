@@ -1,0 +1,27 @@
+{
+	"expo": {
+		"name": "Forever",
+		"slug": "forever-mobile",
+		"version": "1.0.0",
+		"scheme": "forever",
+		"orientation": "portrait",
+		"userInterfaceStyle": "light",
+		"newArchEnabled": true,
+		"splash": {
+			"backgroundColor": "#ffffff"
+		},
+		"ios": {
+			"supportsTablet": true
+		},
+		"android": {
+			"adaptiveIcon": {
+				"backgroundColor": "#ffffff"
+			},
+			"package": "com.forever.mobile"
+		},
+		"web": {
+			"bundler": "metro",
+			"output": "single"
+		}
+	}
+}

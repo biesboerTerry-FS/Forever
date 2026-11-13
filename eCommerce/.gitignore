@@ -1,2 +1,8 @@
 node_modules
+dist
 *.env
+!.env.example
+.DS_Store
+*.log
+# Selenium screenshots are kept on purpose (README); ignore throwaway webdriver profiles
+e2e/.chrome-profile

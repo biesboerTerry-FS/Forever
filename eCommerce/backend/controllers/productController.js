@@ -20,8 +20,9 @@ const addProduct = async (request, response) => {
 		const image2 = request.files.image2 && request.files.image2[0];
 		const image3 = request.files.image3 && request.files.image3[0];
 		const image4 = request.files.image4 && request.files.image4[0];
+		const image5 = request.files.image5 && request.files.image5[0];
 
-		const images = [image1, image2, image3, image4].filter(
+		const images = [image1, image2, image3, image4, image5].filter(
 			(item) => item !== undefined
 		);
 
