@@ -66,3 +66,27 @@ html.dark :focus-visible {
 		scroll-behavior: auto !important;
 	}
 }
+
+/* Toast notifications - match admin/site style */
+.Toastify__toast-container {
+	width: min(92vw, 360px);
+}
+
+.Toastify__toast {
+	font-family: "Outfit", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+	min-height: 48px;
+}
+
+html:not(.dark) .Toastify__toast--success,
+html:not(.dark) .Toastify__toast--error,
+html:not(.dark) .Toastify__toast--info,
+html:not(.dark) .Toastify__toast--warning {
+	color: #1f2937;
+}
+
+html.dark .Toastify__toast--success,
+html.dark .Toastify__toast--error,
+html.dark .Toastify__toast--info,
+html.dark .Toastify__toast--warning {
+	color: #f3f4f6;
+}

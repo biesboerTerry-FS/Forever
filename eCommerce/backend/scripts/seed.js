@@ -57,11 +57,22 @@ const DEMO_ADDRESS = {
 };
 
 // ---------------------------------------------------------------------------
-// Read the product catalog out of the frontend assets file (which also has
-// Vite-specific `import x from "./p_img1.png"` lines). We parse the import
-// map, then evaluate the products array with image names bound to filenames.
+// Load catalog from backend/seed-products.json if present (preferred for
+// portfolio/demo seeding with remote image URLs), otherwise read the product
+// catalog out of the frontend assets file (which also has Vite-specific
+// `import x from "./p_img1.png"` lines).
 // ---------------------------------------------------------------------------
 function loadCatalog() {
+	const jsonCatalog = path.resolve(__dirname, "../seed-products.json");
+	if (fs.existsSync(jsonCatalog)) {
+		const data = JSON.parse(fs.readFileSync(jsonCatalog, "utf8"));
+		const products = Array.isArray(data) ? data : data.products;
+		if (!Array.isArray(products)) {
+			throw new Error("seed-products.json must contain a products array");
+		}
+		return products;
+	}
+
 	const src = fs.readFileSync(ASSETS_FILE, "utf8");
 
 	const importMap = {};
@@ -104,13 +115,20 @@ function buildDescription(item) {
 }
 
 // ---------------------------------------------------------------------------
-// Upload one image to Cloudinary. Falls back to a placeholder URL so a bad
-// key/network issue can never abort the whole seed.
+// Resolve one image: keep http(s) URLs as-is, or upload local asset filenames
+// to Cloudinary. Falls back to a placeholder URL so a bad key/network issue
+// can never abort the whole seed.
 // ---------------------------------------------------------------------------
-async function uploadImage(filename) {
+async function uploadImage(imageRef) {
+	if (typeof imageRef === "string" && /^https?:\/\//i.test(imageRef)) {
+		return imageRef;
+	}
+
+	const filename = String(imageRef);
 	if (OFFLINE) {
 		return `https://picsum.photos/seed/${encodeURIComponent(filename)}/600/800`;
 	}
+
 	const filePath = path.join(ASSETS_DIR, filename);
 	try {
 		const result = await cloudinary.uploader.upload(filePath, {
@@ -174,20 +192,26 @@ async function main() {
 		const cacheKey = `${item.name}__${item.date}`;
 		let images;
 
+		const allRemote = Array.isArray(item.image) && item.image.every((img) => typeof img === "string" && /^https?:\/\//i.test(img));
 		if (!OFFLINE && imageCache.has(cacheKey)) {
 			images = imageCache.get(cacheKey);
 			reused += 1;
 		} else {
 			images = await Promise.all(
-				item.image.map(async (filename) => {
-					const url = await uploadImage(filename);
-					uploadsDone += 1;
-					if (uploadsDone % 10 === 0) {
-						console.log(`  uploaded ${uploadsDone} images...`);
+				item.image.map(async (imageRef) => {
+					const url = await uploadImage(imageRef);
+					if (!(typeof imageRef === "string" && /^https?:\/\//i.test(imageRef))) {
+						uploadsDone += 1;
+						if (uploadsDone % 10 === 0) {
+							console.log(`  uploaded ${uploadsDone} images...`);
+						}
 					}
 					return url;
 				})
 			);
+		}
+		if (allRemote) {
+			images = item.image;
 		}
 
 		return {
@@ -205,6 +229,9 @@ async function main() {
 
 	if (reused > 0) {
 		console.log(`Re-used existing images for ${reused} products.`);
+	}
+	if (uploadsDone > 0) {
+		console.log(`Processed ${uploadsDone} local image uploads.`);
 	}
 
 	console.log("Wiping products and orders...");

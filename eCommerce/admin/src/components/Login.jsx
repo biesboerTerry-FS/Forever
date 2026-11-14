@@ -54,8 +54,9 @@ const Login = ({ setToken, dark, setDark }) => {
 							onChange={(e) => setEmail(e.target.value)}
 							value={email}
 							className="w-full px-3 py-2 border border-gray-200 rounded-lg outline-none dark:border-gray-700"
-							type="email"
-							placeholder="email@example.com"
+							type="text"
+							autoComplete="username"
+							placeholder="admin@example.com"
 							required
 						/>
 					</div>

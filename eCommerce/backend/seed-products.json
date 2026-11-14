@@ -1,0 +1,268 @@
+{
+  "products": [
+    {
+      "name": "Essential Ribbed Tank Top",
+      "description": "A soft ribbed tank with a flattering scoop neck, perfect for layering or warm days.",
+      "price": 18,
+      "image": ["https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Topwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345448,
+      "bestseller": true
+    },
+    {
+      "name": "Relaxed Linen Blend Shirt",
+      "description": "Breathable linen-blend shirt with a relaxed fit and rolled sleeves for effortless everyday style.",
+      "price": 39,
+      "image": ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Topwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345449,
+      "bestseller": true
+    },
+    {
+      "name": "High-Waist Straight Jeans",
+      "description": "Classic straight-leg denim with a high waist, comfortable stretch, and timeless wash.",
+      "price": 49,
+      "image": ["https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Bottomwear",
+      "sizes": ["24", "26", "28", "30", "32"],
+      "date": 1716634345450,
+      "bestseller": true
+    },
+    {
+      "name": "Urban Cargo Joggers",
+      "description": "Tapered joggers with utility pockets and a soft cotton feel for laid-back comfort.",
+      "price": 42,
+      "image": ["https://images.unsplash.com/photo-1517438476312-10d79c077509?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Bottomwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345451,
+      "bestseller": false
+    },
+    {
+      "name": "Cropped Knit Cardigan",
+      "description": "Lightweight cropped cardigan with button front and cozy knit texture for transitional weather.",
+      "price": 34,
+      "image": ["https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Winterwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345452,
+      "bestseller": true
+    },
+    {
+      "name": "Oversized Graphic Tee",
+      "description": "Cotton oversized tee with a clean streetwear silhouette and everyday comfort.",
+      "price": 22,
+      "image": ["https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Topwear",
+      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "date": 1716634345453,
+      "bestseller": false
+    },
+    {
+      "name": "Satin Midi Skirt",
+      "description": "Flowy satin midi skirt with an elastic waist and elegant drape for day-to-night looks.",
+      "price": 44,
+      "image": ["https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Bottomwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345454,
+      "bestseller": false
+    },
+    {
+      "name": "Classic Denim Jacket",
+      "description": "Timeless denim jacket with a structured fit, button front, and durable cotton construction.",
+      "price": 59,
+      "image": ["https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Winterwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345455,
+      "bestseller": true
+    },
+    {
+      "name": "Kids Cotton Hoodie",
+      "description": "Soft cotton-blend hoodie designed for play, comfort, and easy everyday wear.",
+      "price": 28,
+      "image": ["https://images.unsplash.com/photo-1622290291468-a28f7a7dc6a8?auto=format&fit=crop&w=900&q=80"],
+      "category": "Kids",
+      "subCategory": "Winterwear",
+      "sizes": ["4-5Y", "6-7Y", "8-9Y", "10-11Y"],
+      "date": 1716634345456,
+      "bestseller": true
+    },
+    {
+      "name": "Pleated Wide-Leg Trousers",
+      "description": "Tailored wide-leg trousers with soft pleats and a polished silhouette.",
+      "price": 46,
+      "image": ["https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Bottomwear",
+      "sizes": ["XS", "S", "M", "L", "XL"],
+      "date": 1716634345457,
+      "bestseller": false
+    },
+    {
+      "name": "Everyday Crewneck Sweatshirt",
+      "description": "Midweight crewneck sweatshirt with a relaxed fit and brushed interior for comfort.",
+      "price": 36,
+      "image": ["https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Winterwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345458,
+      "bestseller": false
+    },
+    {
+      "name": "Kids Printed T-Shirt",
+      "description": "Fun and durable printed tee made from breathable cotton for active kids.",
+      "price": 14,
+      "image": ["https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?auto=format&fit=crop&w=900&q=80"],
+      "category": "Kids",
+      "subCategory": "Topwear",
+      "sizes": ["4-5Y", "6-7Y", "8-9Y", "10-11Y"],
+      "date": 1716634345459,
+      "bestseller": false
+    },
+    {
+      "name": "Boxy Poplin Blouse",
+      "description": "Crisp poplin blouse with a boxy cut and subtle structure for smart-casual outfits.",
+      "price": 32,
+      "image": ["https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Topwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345460,
+      "bestseller": false
+    },
+    {
+      "name": "Slim Chino Pants",
+      "description": "Versatile slim-fit chinos with stretch comfort, ideal for work or weekends.",
+      "price": 45,
+      "image": ["https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Bottomwear",
+      "sizes": ["30", "32", "34", "36"],
+      "date": 1716634345461,
+      "bestseller": true
+    },
+    {
+      "name": "Faux Leather Biker Jacket",
+      "description": "Edgy faux-leather biker jacket with zip details and a flattering cropped fit.",
+      "price": 69,
+      "image": ["https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Winterwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345462,
+      "bestseller": true
+    },
+    {
+      "name": "Kids Denim Shorts",
+      "description": "Comfortable denim shorts with an adjustable waist and durable everyday finish.",
+      "price": 20,
+      "image": ["https://images.unsplash.com/photo-1519457431-44ccd64a579b?auto=format&fit=crop&w=900&q=80"],
+      "category": "Kids",
+      "subCategory": "Bottomwear",
+      "sizes": ["4-5Y", "6-7Y", "8-9Y", "10-11Y"],
+      "date": 1716634345463,
+      "bestseller": false
+    },
+    {
+      "name": "Basic Cotton Bodysuit",
+      "description": "Sleek stretch-cotton bodysuit with a smooth fit, ideal for layering under any outfit.",
+      "price": 24,
+      "image": ["https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Topwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345464,
+      "bestseller": false
+    },
+    {
+      "name": "Textured Knit Polo",
+      "description": "Smart textured polo shirt with a modern fit and breathable knit fabric.",
+      "price": 33,
+      "image": ["https://images.unsplash.com/photo-1586363104862-3a5e2ab60d99?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Topwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345465,
+      "bestseller": false
+    },
+    {
+      "name": "Kids Puffer Jacket",
+      "description": "Warm lightweight puffer jacket with zip closure, perfect for cooler days.",
+      "price": 38,
+      "image": ["https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=900&q=80"],
+      "category": "Kids",
+      "subCategory": "Winterwear",
+      "sizes": ["4-5Y", "6-7Y", "8-9Y", "10-11Y"],
+      "date": 1716634345466,
+      "bestseller": true
+    },
+    {
+      "name": "Utility Mini Dress",
+      "description": "Versatile utility-style mini dress with button details and a flattering waist tie.",
+      "price": 52,
+      "image": ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Topwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345467,
+      "bestseller": false
+    },
+    {
+      "name": "Loose Fit Carpenter Jeans",
+      "description": "Relaxed carpenter jeans with utility pockets and durable denim for a modern casual look.",
+      "price": 54,
+      "image": ["https://images.unsplash.com/photo-1542272604-787c3835535d?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Bottomwear",
+      "sizes": ["30", "32", "34", "36", "38"],
+      "date": 1716634345468,
+      "bestseller": false
+    },
+    {
+      "name": "Kids Jogger Pants",
+      "description": "Easy pull-on joggers with a soft feel and cuffed hems for all-day play.",
+      "price": 22,
+      "image": ["https://images.unsplash.com/photo-1503919545889-aef636e10ad4?auto=format&fit=crop&w=900&q=80"],
+      "category": "Kids",
+      "subCategory": "Bottomwear",
+      "sizes": ["4-5Y", "6-7Y", "8-9Y", "10-11Y"],
+      "date": 1716634345469,
+      "bestseller": false
+    },
+    {
+      "name": "Wool Blend Overcoat",
+      "description": "Refined wool-blend overcoat with clean lines, ideal for layering over smart or casual outfits.",
+      "price": 89,
+      "image": ["https://images.unsplash.com/photo-1544923246-77307dd654ca?auto=format&fit=crop&w=900&q=80"],
+      "category": "Men",
+      "subCategory": "Winterwear",
+      "sizes": ["S", "M", "L", "XL"],
+      "date": 1716634345470,
+      "bestseller": true
+    },
+    {
+      "name": "Ribbed Bodycon Midi Dress",
+      "description": "Stretch ribbed midi dress with a sleek silhouette and comfortable all-day fit.",
+      "price": 48,
+      "image": ["https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=80"],
+      "category": "Women",
+      "subCategory": "Topwear",
+      "sizes": ["XS", "S", "M", "L"],
+      "date": 1716634345471,
+      "bestseller": true
+    }
+  ]
+}

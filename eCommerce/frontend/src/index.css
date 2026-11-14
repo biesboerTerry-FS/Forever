@@ -95,3 +95,34 @@ html.dark option {
 		color: #111827;
 	}
 }
+
+/* Toast notifications - match site style */
+.Toastify__toast-container {
+	width: min(92vw, 360px);
+}
+
+.Toastify__toast {
+	font-family: "Outfit", sans-serif;
+	min-height: 48px;
+}
+
+.Toastify__toast--success .Toastify__toast-icon svg,
+.Toastify__toast--error .Toastify__toast-icon svg,
+.Toastify__toast--info .Toastify__toast-icon svg,
+.Toastify__toast--warning .Toastify__toast-icon svg {
+	fill: currentColor;
+}
+
+html:not(.dark) .Toastify__toast--success,
+html:not(.dark) .Toastify__toast--error,
+html:not(.dark) .Toastify__toast--info,
+html:not(.dark) .Toastify__toast--warning {
+	color: #111827;
+}
+
+html.dark .Toastify__toast--success,
+html.dark .Toastify__toast--error,
+html.dark .Toastify__toast--info,
+html.dark .Toastify__toast--warning {
+	color: #f3f4f6;
+}

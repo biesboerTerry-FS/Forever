@@ -49,7 +49,19 @@ const App = () => {
 			>
 				Skip to content
 			</a>
-			<ToastContainer theme={dark ? "dark" : "light"} />
+			<ToastContainer
+				position="top-right"
+				autoClose={3000}
+				hideProgressBar={false}
+				closeOnClick
+				pauseOnHover
+				draggable={false}
+				theme={dark ? "dark" : "light"}
+				toastClassName="!bg-white !text-gray-900 !border !border-gray-200 !rounded-none !shadow-sm dark:!bg-gray-900 dark:!text-gray-100 dark:!border-gray-700"
+				bodyClassName="!text-sm !font-medium"
+				progressClassName="!bg-gray-900 dark:!bg-gray-100"
+				closeButton={false}
+			/>
 			<NavBar />
 			<SearchBar />
 			<main id="main-content">
