@@ -174,6 +174,7 @@ npx expo start --lan --port 8083
 - **Browser:** `npx expo start --web --port 8083`, or open http://localhost:8083.
 - On a physical device, `EXPO_PUBLIC_API_URL` **must** be the computer's LAN address (e.g. `http://192.168.0.148:4001`), not `localhost`, because `localhost` on the phone means the phone itself.
 - The app and the web storefront share accounts: sign in with `demo@forever.test` / `demo1234` on either one.
+- **Push notifications:** the app registers an Expo push token when signed in and removes it on sign out (`/api/user/push-token`, `/api/user/push-token/remove`). For production push delivery, configure EAS credentials and set `expo.extra.eas.projectId` in `mobile/app.json` (or EAS config), then test on a real device/dev build. See [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
 ## Seeding
 
@@ -259,6 +260,8 @@ Base URL: `http://localhost:4001`. Authenticated routes take a `token` request h
 | POST | `/api/user/oauth/demo` | Demo social sign-in (development only) |
 | POST | `/api/user/forgot-password` | Email a one-hour reset link |
 | POST | `/api/user/reset-password` | Set a new password with a reset token |
+| POST | `/api/user/push-token` | Register Expo push token for order notifications (user) |
+| POST | `/api/user/push-token/remove` | Remove Expo push token on logout/device removal (user) |
 | GET | `/api/product/list` | All products |
 | POST | `/api/product/add` | Add product (admin, multipart images) |
 | POST | `/api/product/remove` | Remove product (admin) |
@@ -287,6 +290,8 @@ All three apps ship Vercel configs (`vercel.json`) — the backend as a serverle
 | API | `eCommerce/backend` | Node serverless function |
 | Storefront | `eCommerce/frontend` | Vite static build |
 | Admin | `eCommerce/admin` | Vite static build |
+
+For a full operational checklist (Preview vs Production separation, seeding/backup/rollback, webhook/email/mobile push readiness, monitoring, and post-deploy smoke tests), see [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
 ### Environment variables
 

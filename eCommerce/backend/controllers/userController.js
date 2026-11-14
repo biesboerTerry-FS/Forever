@@ -335,6 +335,26 @@ const registerPushToken = async (request, response) => {
 	}
 };
 
+//& Remove an Expo push token for the signed-in user (e.g. on logout).
+const removePushToken = async (request, response) => {
+	try {
+		const { userId, pushToken } = request.body;
+		if (!userId || typeof pushToken !== "string") {
+			return response.json({ success: false, message: "Missing push token" });
+		}
+		if (!pushToken.startsWith("ExponentPushToken")) {
+			return response.json({ success: false, message: "Invalid push token" });
+		}
+		await userModel.findByIdAndUpdate(userId, {
+			$pull: { pushTokens: pushToken },
+		});
+		return response.json({ success: true });
+	} catch (error) {
+		console.log(error);
+		return response.json({ success: false, message: error.message });
+	}
+};
+
 //& Reset password using the token from the email.
 const resetPassword = async (request, response) => {
 	try {
@@ -393,4 +413,5 @@ export {
 	forgotPassword,
 	resetPassword,
 	registerPushToken,
+	removePushToken,
 };

@@ -8,7 +8,10 @@ import React, {
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../api";
-import { registerForPushNotificationsAsync } from "../pushNotifications";
+import {
+	registerForPushNotificationsAsync,
+	unregisterForPushNotificationsAsync,
+} from "../pushNotifications";
 
 const ShopContext = createContext(null);
 
@@ -79,12 +82,17 @@ export const ShopProvider = ({ children }) => {
 	}, []);
 
 	const signOut = useCallback(async () => {
+		const currentToken = token;
+		// Best-effort: remove this device's push token before clearing session.
+		if (currentToken) {
+			await unregisterForPushNotificationsAsync(currentToken);
+		}
 		setToken("");
 		setUser(null);
 		setCart({});
 		setWishlist([]);
 		await AsyncStorage.multiRemove(["token", "user"]);
-	}, []);
+	}, [token]);
 
 	const addToCart = useCallback(
 		async (itemId, size) => {
