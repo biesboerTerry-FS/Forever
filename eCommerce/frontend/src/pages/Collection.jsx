@@ -102,135 +102,107 @@ const Collection = () => {
 	}, [category, subCategory, search, sortType, products]);
 
 	return (
-		<div className="flex flex-col pt-10 border-t sm:flex-row sm:gap-10">
+		<div className="flex flex-col gap-6 pt-8 border-t sm:pt-10 sm:flex-row sm:gap-8 lg:gap-10">
 			{/* Filter options */}
-			<div className="min-w-60">
+			<aside className="w-full sm:w-60 lg:w-64 sm:shrink-0">
 				<button
 					type="button"
 					onClick={() => setShowFilter(!showFilter)}
 					aria-expanded={showFilter}
-					className="flex items-center gap-2 my-2 text-xl cursor-pointer"
+					className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium tracking-wide border border-gray-200 sm:justify-start sm:gap-2 sm:px-0 sm:py-0 sm:border-0 sm:text-xl sm:tracking-normal dark:border-gray-800"
 				>
-					FILTERS
+					<span>FILTERS</span>
 					<img
-						className={`h-3 sm:hidden ${showFilter ? "rotate-90" : ""}`}
+						className={`h-3 transition-transform sm:hidden ${showFilter ? "rotate-90" : ""}`}
 						src={assets.dropdown_icon}
 						alt=""
 					/>
 				</button>
 
-				{/* category filter */}
-				<div
-					className={`border border-gray-300 dark:border-gray-700 pl-5 py-3 mt-6 ${
-						showFilter ? "" : "hidden"
-					} sm:block`}
-				>
-					<p className="mb-3 text-sm font-medium">CATEGORIES</p>
-					<div className="flex flex-col gap-2 text-sm font-light text-gray-700 dark:text-gray-200">
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Men"}
-								onChange={toggleCategory}
-							/>
-							Men
-						</label>
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Women"}
-								onChange={toggleCategory}
-							/>
-							Women
-						</label>
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Kids"}
-								onChange={toggleCategory}
-							/>
-							Kids
-						</label>
+				<div className={`${showFilter ? "mt-3 space-y-4" : "hidden"} sm:block sm:mt-6 sm:space-y-5`}>
+					{/* category filter */}
+					<div className="p-4 border border-gray-200 dark:border-gray-800 sm:p-5">
+						<p className="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-100">CATEGORIES</p>
+						<div className="flex flex-col gap-2.5 text-sm text-gray-700 dark:text-gray-200">
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Men"} onChange={toggleCategory} />
+								Men
+							</label>
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Women"} onChange={toggleCategory} />
+								Women
+							</label>
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Kids"} onChange={toggleCategory} />
+								Kids
+							</label>
+						</div>
 					</div>
-				</div>
 
-				{/* Subcategory filter */}
-				<div
-					className={`border border-gray-300 dark:border-gray-700 pl-5 py-3 my-5 ${
-						showFilter ? "" : "hidden"
-					} sm:block`}
-				>
-					<p className="mb-3 text-sm font-medium">TYPE</p>
-					<div className="flex flex-col gap-2 text-sm font-light text-gray-700 dark:text-gray-200">
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Topwear"}
-								onChange={toggleSubCategory}
-							/>
-							Topwear
-						</label>
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Bottomwear"}
-								onChange={toggleSubCategory}
-							/>
-							Bottomwear
-						</label>
-						<label className="flex gap-2 cursor-pointer">
-							<input
-								className="w-3"
-								type="checkbox"
-								value={"Winterwear"}
-								onChange={toggleSubCategory}
-							/>
-							Winterwear
-						</label>
+					{/* Subcategory filter */}
+					<div className="p-4 border border-gray-200 dark:border-gray-800 sm:p-5">
+						<p className="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-100">TYPE</p>
+						<div className="flex flex-col gap-2.5 text-sm text-gray-700 dark:text-gray-200">
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Topwear"} onChange={toggleSubCategory} />
+								Topwear
+							</label>
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Bottomwear"} onChange={toggleSubCategory} />
+								Bottomwear
+							</label>
+							<label className="flex items-center gap-2 cursor-pointer">
+								<input className="w-4 h-4 accent-black dark:accent-white" type="checkbox" value={"Winterwear"} onChange={toggleSubCategory} />
+								Winterwear
+							</label>
+						</div>
 					</div>
 				</div>
-			</div>
+			</aside>
 
 			{/* right side */}
-			<div className="flex-1">
-				<div className="flex justify-between mb-4 text-base sm:text-2xl">
-					<Title text1={"ALL"} text2={"COLLECTIONS"} />
+			<div className="flex-1 min-w-0">
+				<div className="flex flex-col gap-3 mb-5 sm:flex-row sm:items-end sm:justify-between">
+					<div>
+						<Title text1={"ALL"} text2={"COLLECTIONS"} />
+						<p className="text-sm text-gray-500 dark:text-gray-400">
+							Browse our latest styles and everyday essentials.
+						</p>
+					</div>
 					{/* Product sort */}
-					<select
-						onChange={(e) => setSortType(e.target.value)}
-						aria-label="Sort products"
-						className="px-2 text-sm border-2 border-gray-300 dark:border-gray-700"
-					>
-						<option value="relavent">Sort by: Relavent</option>
-						<option value="low-high">Sort by: Low to High</option>
-						<option value="high-low">Sort by: High to Low</option>
-					</select>
+					<div className="flex items-center gap-2">
+						<label htmlFor="sort-products" className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+							Sort by
+						</label>
+						<select
+							id="sort-products"
+							onChange={(e) => setSortType(e.target.value)}
+							aria-label="Sort products"
+							className="px-3 py-2 text-sm bg-white border border-gray-300 dark:bg-gray-950 dark:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-400 dark:focus:ring-gray-500"
+						>
+							<option value="relavent">Relevant</option>
+							<option value="low-high">Price: Low to High</option>
+							<option value="high-low">Price: High to Low</option>
+						</select>
+					</div>
 				</div>
 
 				{/* Results summary */}
-				<div className="flex items-center justify-between mb-3 text-sm text-gray-500 dark:text-gray-400">
+				<div className="flex flex-wrap items-center justify-between gap-2 pb-4 mb-5 text-sm border-b border-gray-200 text-gray-500 dark:text-gray-400 dark:border-gray-800">
 					<p>
-						{filterProducts.length}{" "}
+						Showing <span className="font-medium text-gray-800 dark:text-gray-100">{Math.min(visibleCount, filterProducts.length)}</span> of{" "}
+						<span className="font-medium text-gray-800 dark:text-gray-100">{filterProducts.length}</span>{" "}
 						{filterProducts.length === 1 ? "product" : "products"}
 						{search.trim() ? (
 							<>
-								{" "}
-								for{" "}
-								<span className="font-medium text-gray-700 dark:text-gray-200">
-									“{search.trim()}”
-								</span>
+								{" "}for <span className="font-medium text-gray-700 dark:text-gray-200">“{search.trim()}”</span>
 							</>
 						) : null}
 					</p>
 					{search.trim() && (
 						<button
 							onClick={() => setSearch("")}
-							className="text-gray-600 dark:text-gray-300 underline hover:text-black dark:hover:text-white"
+							className="text-gray-700 underline dark:text-gray-200 hover:text-black dark:hover:text-white"
 						>
 							Clear search
 						</button>
@@ -239,25 +211,25 @@ const Collection = () => {
 
 				{/* Map Products */}
 				{filterProducts.length === 0 ? (
-					<div className="py-20 text-center text-gray-500 dark:text-gray-400">
-						<p className="text-lg font-medium text-gray-700 dark:text-gray-200">
-							No products found
-						</p>
-						<p className="mt-2">
+					<div className="px-6 py-16 text-center border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400">
+						<p className="text-lg font-medium text-gray-800 dark:text-gray-100">No products found</p>
+						<p className="max-w-md mx-auto mt-2 text-sm">
 							{search.trim()
-								? `Nothing matched “${search.trim()}”. Try a different term or clear the search.`
-								: "Try removing a filter to see more products."}
+								? `Nothing matched “${search.trim()}”. Try a different search term or adjust your filters.`
+								: "Try adjusting or clearing your filters to see more products."}
 						</p>
-						<button
-							onClick={() => setSearch("")}
-							className="px-6 py-2 mt-6 text-sm text-white dark:text-gray-900 bg-black dark:bg-white"
-						>
-							Clear search
-						</button>
+						{search.trim() ? (
+							<button
+								onClick={() => setSearch("")}
+								className="px-6 py-2.5 mt-6 text-sm text-white bg-black dark:text-gray-900 dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-200"
+							>
+								Clear search
+							</button>
+						) : null}
 					</div>
 				) : (
 					<>
-						<div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 gap-y-6">
+						<div className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:grid-cols-4 sm:gap-x-6">
 							{visibleProducts.map((item, index) => (
 								<ProductItem
 									key={item._id || index}
@@ -269,11 +241,11 @@ const Collection = () => {
 							))}
 						</div>
 						{hasMore && (
-							<div className="flex justify-center mt-10">
+							<div className="flex justify-center mt-12">
 								<button
 									type="button"
 									onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}
-									className="px-8 py-3 text-sm border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+									className="px-8 py-3 text-sm font-medium transition-colors border border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
 								>
 									Load more ({filterProducts.length - visibleCount} remaining)
 								</button>

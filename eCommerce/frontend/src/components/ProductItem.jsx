@@ -8,10 +8,13 @@ const ProductItem = ({ id, image, name, price }) => {
 	const src = imageUrl(Array.isArray(image) ? image[0] : image, 500);
 
 	return (
-		<Link className="text-gray-700 dark:text-gray-200 cursor-pointer" to={`/product/${id}`}>
-			<div className="overflow-hidden">
+		<Link
+			className="group block text-gray-700 transition-colors cursor-pointer dark:text-gray-200"
+			to={`/product/${id}`}
+		>
+			<div className="overflow-hidden bg-gray-100 border border-transparent aspect-[4/5] dark:bg-gray-900 group-hover:border-gray-200 dark:group-hover:border-gray-800">
 				<img
-					className="transition ease-in-out hover:scale-110"
+					className="object-cover w-full h-full transition duration-500 ease-out group-hover:scale-105"
 					src={src}
 					alt={name}
 					loading="lazy"
@@ -23,8 +26,10 @@ const ProductItem = ({ id, image, name, price }) => {
 					}}
 				/>
 			</div>
-			<p className="pt-3 pb-1 text-sm">{name}</p>
-			<p className="text-sm font-medium">
+			<p className="pt-3 pb-1 text-sm leading-5 text-gray-800 dark:text-gray-100 line-clamp-2 min-h-[2.75rem]">
+				{name}
+			</p>
+			<p className="text-sm font-semibold text-gray-900 dark:text-white">
 				{currency}
 				{price}
 			</p>
