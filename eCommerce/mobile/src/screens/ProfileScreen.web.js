@@ -34,6 +34,7 @@ export default function ProfileScreen({ navigation }) {
 	const { isSignedIn, signOut } = useAuth();
 	const { user: clerkUser } = useUser();
 	const showSignedIn = token || isSignedIn;
+	const syncing = isSignedIn && !token;
 
 	const confirmLogout = () => {
 		Alert.alert("Log out", "Are you sure you want to log out?", [
@@ -88,6 +89,7 @@ export default function ProfileScreen({ navigation }) {
 							</Text>
 							<Text style={{ color: colors.muted, fontSize: 12, marginTop: 2 }}>
 								{user?.email || clerkUser?.primaryEmailAddress?.emailAddress || ""}
+								{syncing ? " · syncing…" : ""}
 							</Text>
 						</View>
 						<View

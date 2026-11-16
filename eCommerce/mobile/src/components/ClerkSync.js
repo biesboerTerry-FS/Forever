@@ -24,15 +24,17 @@ export default function ClerkSync() {
 			try {
 				syncingRef.current = true;
 				const clerkToken = await getToken();
+				console.log("[ClerkSync] token available:", !!clerkToken);
 				if (!clerkToken) return;
 				const data = await api.post("/api/user/clerk", { clerkToken });
+				console.log("[ClerkSync] backend response:", data.success, data.message);
 				if (data.success) {
 					await signIn(data);
 				} else {
-					console.warn("Clerk sync failed:", data.message);
+					console.warn("[ClerkSync] failed:", data.message);
 				}
 			} catch (error) {
-				console.warn("Clerk sync error:", error.message);
+				console.warn("[ClerkSync] error:", error.message);
 			} finally {
 				syncingRef.current = false;
 			}

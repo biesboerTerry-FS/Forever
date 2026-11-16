@@ -4,10 +4,11 @@ import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
-import { verifyToken } from "@clerk/backend";
+import { createClerkClient, verifyToken } from "@clerk/backend";
 import { sendPasswordResetEmail } from "../utils/email.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 const createToken = (id) => {
 	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -276,7 +277,29 @@ const clerkLogin = async (request, response) => {
 			secretKey: process.env.CLERK_SECRET_KEY,
 		});
 
-		const email = String(session.email || "").toLowerCase();
+		// Session tokens do not always include email by default. If missing,
+		// fetch the user from the Clerk Backend API using the subject (user id).
+		let email = String(session.email || "").toLowerCase();
+		let firstName = session.firstName;
+		let lastName = session.lastName;
+		let imageUrl = session.imageUrl;
+
+		if (!email && session.sub) {
+			try {
+				const clerkUser = await clerkClient.users.getUser(session.sub);
+				email = String(
+					clerkUser.primaryEmailAddress?.emailAddress ||
+					clerkUser.emailAddresses?.[0]?.emailAddress ||
+					""
+				).toLowerCase();
+				firstName = firstName || clerkUser.firstName;
+				lastName = lastName || clerkUser.lastName;
+				imageUrl = imageUrl || clerkUser.imageUrl;
+			} catch (userError) {
+				console.warn("Could not fetch Clerk user:", userError.message);
+			}
+		}
+
 		if (!email) {
 			return response.json({
 				success: false,
@@ -284,7 +307,7 @@ const clerkLogin = async (request, response) => {
 			});
 		}
 
-		const name = [session.firstName, session.lastName]
+		const name = [firstName, lastName]
 			.filter(Boolean)
 			.join(" ")
 			.trim() || email.split("@")[0];
@@ -292,13 +315,13 @@ const clerkLogin = async (request, response) => {
 		const result = await signInSocialUser({
 			email,
 			name,
-			picture: session.imageUrl || "",
+			picture: imageUrl || "",
 			provider: "clerk",
 		});
 
 		response.json({ success: true, ...result });
 	} catch (error) {
-		console.log(error);
+		console.log("clerkLogin error:", error);
 		response.json({
 			success: false,
 			message: "Clerk sign-in failed. Please try again.",

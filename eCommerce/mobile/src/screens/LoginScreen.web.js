@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { SignIn, useAuth } from "@clerk/react";
 import { useShop } from "../context/ShopContext";
 import { colors, spacing } from "../theme";
@@ -9,14 +9,33 @@ export default function LoginScreen({ navigation }) {
 	const { isSignedIn } = useAuth();
 
 	useEffect(() => {
-		if (token || isSignedIn) {
-			// Prefer going back if this screen was pushed from the tab stack;
-			// otherwise fall back to the Home tab.
+		if (token) {
+			// Backend session is ready — leave this screen.
 			if (navigation.canGoBack()) navigation.goBack();
 			else navigation.navigate("Tabs", { screen: "Home" });
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [token, isSignedIn]);
+	}, [token]);
+
+	// Clerk session exists but the backend token is still being synced.
+	if (isSignedIn && !token) {
+		return (
+			<View
+				style={{
+					flex: 1,
+					backgroundColor: colors.bg,
+					alignItems: "center",
+					justifyContent: "center",
+					padding: spacing.lg,
+				}}
+			>
+				<ActivityIndicator color={colors.ink} />
+				<Text style={{ marginTop: 12, color: colors.muted }}>
+					Signing you in…
+				</Text>
+			</View>
+		);
+	}
 
 	return (
 		<View
