@@ -12,9 +12,9 @@ const ProductItem = ({ id, image, name, price }) => {
 			className="group block text-gray-700 transition-colors cursor-pointer dark:text-gray-200"
 			to={`/product/${id}`}
 		>
-			<div className="overflow-hidden bg-gray-100 border border-transparent aspect-[4/5] dark:bg-gray-900 group-hover:border-gray-200 dark:group-hover:border-gray-800">
+			<div className="overflow-hidden w-full bg-gray-100 border border-transparent aspect-[4/5] dark:bg-gray-900 group-hover:border-gray-200 dark:group-hover:border-gray-800">
 				<img
-					className="object-cover w-full h-full transition duration-500 ease-out group-hover:scale-105"
+					className="block object-cover object-center w-full h-full transition duration-500 ease-out group-hover:scale-105"
 					src={src}
 					alt={name}
 					loading="lazy"
