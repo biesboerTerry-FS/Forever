@@ -175,19 +175,15 @@ const Login = () => {
 					<p className="text-3xl prata-regular">{currentState}</p>
 					<hr className="border-none h-[1.5px] w-8 bg-gray-800 dark:bg-gray-200" />
 				</div>
-				{currentState === "Login" ? (
-					""
-				) : (
-					<div className="">
-						<input
-							onChange={(e) => setName(e.target.value)}
-							value={name}
-							type="text"
-							className="w-full px-3 py-2 my-2 border border-gray-800 dark:border-gray-300"
-							placeholder="Full Name"
-							required
-						/>
-					</div>
+				{currentState === "Login" ? null : (
+					<input
+						onChange={(e) => setName(e.target.value)}
+						value={name}
+						type="text"
+						className="w-full px-3 py-2 border border-gray-800 dark:border-gray-300"
+						placeholder="Full Name"
+						required
+					/>
 				)}
 
 				<input

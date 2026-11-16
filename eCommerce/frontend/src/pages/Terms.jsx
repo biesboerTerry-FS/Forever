@@ -44,8 +44,8 @@ const Terms = () => {
 						By placing an order, you authorize us (and our payment providers) to charge the selected payment method for the total amount shown at checkout.
 					</p>
 					<ul className="flex flex-col gap-2 list-disc list-inside">
-						<li>Supported payment methods may include Cash on Delivery, Stripe, and Razorpay (subject to availability/configuration).</li>
-						<li>Card/payment details are processed by third-party providers and are not stored on our servers.</li>
+						<li>Supported payment methods may include Stripe and Credit/Debit Card (subject to availability/configuration).</li>
+						<li>Online card/payment details are processed by third-party providers and are not stored on our servers.</li>
 						<li>Orders may be subject to verification, fraud checks, or cancellation where necessary.</li>
 					</ul>
 				</section>

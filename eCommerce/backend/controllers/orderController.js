@@ -118,17 +118,21 @@ const fulfillPaidOrder = async (orderId, userId) => {
 	return order;
 };
 
-// Placing orders using cash on delivery
+// Placing orders using manual/card-on-delivery processing
 const placeOrder = async (request, response) => {
 	try {
-		const { userId, items, address } = request.body;
+		const { userId, items, address, paymentMethod } = request.body;
 		const priced = await buildOrderFromItems(items);
+		const normalizedMethod =
+			paymentMethod === "Card" || paymentMethod === "COD"
+				? paymentMethod
+				: "Card";
 		const orderData = {
 			userId,
 			items: priced.items,
 			address,
 			amount: priced.amount,
-			paymentMethod: "COD",
+			paymentMethod: normalizedMethod,
 			payment: false,
 			date: Date.now(),
 		};

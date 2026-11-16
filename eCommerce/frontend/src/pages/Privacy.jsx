@@ -25,7 +25,7 @@ const Privacy = () => {
 					<ul className="flex flex-col gap-2 list-disc list-inside">
 						<li><strong>Account information:</strong> name, email address, and account credentials (passwords are stored securely using hashing).</li>
 						<li><strong>Order and delivery information:</strong> items purchased, shipping address, phone number, and order history.</li>
-						<li><strong>Payment information:</strong> payments are processed by third-party providers (such as Stripe or Razorpay). We do not store full card details on our servers.</li>
+						<li><strong>Payment information:</strong> online payments are processed by third-party providers (such as Stripe). We do not store full card details on our servers.</li>
 						<li><strong>Communications:</strong> messages you send us for support, returns, or inquiries.</li>
 						<li><strong>Technical and usage data:</strong> basic device/browser information and site usage needed for security, performance, and functionality.</li>
 					</ul>
@@ -55,7 +55,7 @@ const Privacy = () => {
 					<h2 className="mb-2 text-lg font-medium text-gray-800 dark:text-gray-100">4. Sharing your information</h2>
 					<p className="mb-2">We share information only as needed to operate our services, including with:</p>
 					<ul className="flex flex-col gap-2 list-disc list-inside">
-						<li><strong>Payment providers</strong> (e.g., Stripe, Razorpay) to process payments securely.</li>
+						<li><strong>Payment providers</strong> (e.g., Stripe) to process payments securely.</li>
 						<li><strong>Hosting and infrastructure providers</strong> (e.g., Vercel, database/image services) to run the site and store content.</li>
 						<li><strong>Communication providers</strong> (e.g., email services) to send transactional messages.</li>
 						<li><strong>Legal or safety reasons</strong> when required to comply with law or protect users and services.</li>
