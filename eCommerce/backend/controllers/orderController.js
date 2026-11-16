@@ -555,6 +555,61 @@ const updateStatus = async (request, response) => {
 	}
 };
 
+const isOrderEditableStatus = (status) => {
+	const s = String(status || "").trim().toLowerCase();
+	return s === "order placed" || s === "ordered" || s === "packing";
+};
+
+// update order details from Admin panel (only early statuses)
+const updateOrder = async (request, response) => {
+	try {
+		const { orderId, address, payment } = request.body;
+		if (!orderId) {
+			return response.json({ success: false, message: "Order id is required." });
+		}
+
+		const order = await orderModel.findById(orderId);
+		if (!order) {
+			return response.json({ success: false, message: "Order not found" });
+		}
+		if (!isOrderEditableStatus(order.status)) {
+			return response.json({
+				success: false,
+				message: "Only orders that are Ordered or Packing can be edited.",
+			});
+		}
+
+		if (address && typeof address === "object") {
+			const current = order.address && typeof order.address === "object" ? order.address : {};
+			const next = { ...current };
+			for (const key of [
+				"firstName",
+				"lastName",
+				"email",
+				"street",
+				"city",
+				"state",
+				"zipcode",
+				"country",
+				"phone",
+			]) {
+				if (address[key] !== undefined) next[key] = String(address[key]);
+			}
+			order.address = next;
+		}
+
+		if (payment !== undefined) {
+			order.payment = payment === true || payment === "true";
+		}
+
+		await order.save();
+		response.json({ success: true, message: "Order updated", order });
+	} catch (error) {
+		console.log(error);
+		response.json({ success: false, message: error.message });
+	}
+};
+
 export {
 	placeOrder,
 	placeOrderStripe,
@@ -562,6 +617,7 @@ export {
 	allOrders,
 	userOrders,
 	updateStatus,
+	updateOrder,
 	verifyStripe,
 	verifyRazorpay,
 	stripeWebhook,

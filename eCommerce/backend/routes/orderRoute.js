@@ -6,6 +6,7 @@ import {
 	allOrders,
 	userOrders,
 	updateStatus,
+	updateOrder,
 	verifyStripe,
 	verifyRazorpay,
 	stripeWebhook,
@@ -19,6 +20,7 @@ const orderRouter = express.Router();
 // Admin features
 orderRouter.post("/list", adminAuth, allOrders);
 orderRouter.post("/status", adminAuth, updateStatus);
+orderRouter.post("/update", adminAuth, updateOrder);
 
 // Payment features
 orderRouter.post("/place", authUser, placeOrder);

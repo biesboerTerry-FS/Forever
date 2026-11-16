@@ -118,4 +118,58 @@ const singleProduct = async (request, response) => {
 	}
 };
 
-export { addProduct, listProduct, removeProduct, singleProduct };
+//& function to update product {POST}
+const updateProduct = async (request, response) => {
+	try {
+		const {
+			id,
+			name,
+			description,
+			price,
+			category,
+			subCategory,
+			sizes,
+			bestseller,
+		} = request.body;
+
+		if (!id) {
+			return response.json({ success: false, message: "Product id is required." });
+		}
+
+		const update = {};
+		if (name !== undefined) update.name = String(name).trim();
+		if (description !== undefined) update.description = String(description).trim();
+		if (price !== undefined) update.price = Number(price);
+		if (category !== undefined) update.category = String(category).trim();
+		if (subCategory !== undefined) update.subCategory = String(subCategory).trim();
+		if (sizes !== undefined) {
+			update.sizes = Array.isArray(sizes)
+				? sizes
+				: typeof sizes === "string"
+					? JSON.parse(sizes)
+					: sizes;
+		}
+		if (bestseller !== undefined) {
+			update.bestseller =
+				bestseller === true || bestseller === "true" ? true : false;
+		}
+
+		const product = await productModel.findByIdAndUpdate(id, update, {
+			new: true,
+		});
+		if (!product) {
+			return response.json({ success: false, message: "Product not found." });
+		}
+
+		response.json({
+			success: true,
+			message: "Product updated successfully.",
+			product,
+		});
+	} catch (error) {
+		console.log(error);
+		response.json({ success: false, message: error.message });
+	}
+};
+
+export { addProduct, listProduct, removeProduct, singleProduct, updateProduct };
