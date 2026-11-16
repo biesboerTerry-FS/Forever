@@ -8,7 +8,14 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
 	const currency = "$";
 	const delivery_fee = 10;
-	const backendUrl = import.meta.env.VITE_BACKEND_URL;
+	const rawBackendUrl = (import.meta.env.VITE_BACKEND_URL || "").trim().replace(/\/$/, "");
+	const backendUrl = rawBackendUrl
+		? /^https?:\/\//i.test(rawBackendUrl)
+			? rawBackendUrl
+			: /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(rawBackendUrl)
+				? `http://${rawBackendUrl}`
+				: `https://${rawBackendUrl}`
+		: "";
 	const [search, setSearch] = useState("");
 	const [showSearch, setShowSearch] = useState(false);
 	const [cartItems, setCartItems] = useState({});

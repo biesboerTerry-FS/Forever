@@ -11,7 +11,14 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const rawBackendUrl = (import.meta.env.VITE_BACKEND_URL || "").trim().replace(/\/$/, "");
+export const backendUrl = rawBackendUrl
+	? /^https?:\/\//i.test(rawBackendUrl)
+		? rawBackendUrl
+		: /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(rawBackendUrl)
+			? `http://${rawBackendUrl}`
+			: `https://${rawBackendUrl}`
+	: "";
 export const currency = "$";
 
 const THEME_KEY = "admin-theme";
