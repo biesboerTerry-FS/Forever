@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
@@ -14,6 +14,9 @@ const Orders = ({ token }) => {
 	const [editingId, setEditingId] = useState(null);
 	const [editForm, setEditForm] = useState(null);
 	const [saving, setSaving] = useState(false);
+	const [search, setSearch] = useState("");
+	const [statusFilter, setStatusFilter] = useState("all");
+	const [paymentFilter, setPaymentFilter] = useState("all");
 
 	const fetchAllOrders = async () => {
 		if (!token) return null;
@@ -97,15 +100,118 @@ const Orders = ({ token }) => {
 		}
 	};
 
+	const filtered = useMemo(() => {
+		const q = search.trim().toLowerCase();
+		return orders.filter((order) => {
+			const customer = `${order.address?.firstName || ""} ${order.address?.lastName || ""}`.trim();
+			const hay = [
+				order._id,
+				customer,
+				order.address?.email,
+				order.address?.phone,
+				order.paymentMethod,
+				order.status,
+			]
+				.filter(Boolean)
+				.join(" ")
+				.toLowerCase();
+			const matchesSearch = !q || hay.includes(q);
+			const matchesStatus = statusFilter === "all" || order.status === statusFilter;
+			const matchesPayment =
+				paymentFilter === "all" ||
+				(paymentFilter === "paid" ? !!order.payment : !order.payment);
+			return matchesSearch && matchesStatus && matchesPayment;
+		});
+	}, [orders, search, statusFilter, paymentFilter]);
+
+	const exportCsv = () => {
+		const rows = [
+			["orderId", "date", "customer", "email", "phone", "items", "amount", "currency", "paymentMethod", "payment", "status", "city", "country"],
+			...filtered.map((o) => [
+				o._id,
+				o.date ? new Date(o.date).toISOString() : "",
+				`${o.address?.firstName || ""} ${o.address?.lastName || ""}`.trim(),
+				o.address?.email || "",
+				o.address?.phone || "",
+				Array.isArray(o.items) ? o.items.length : 0,
+				o.amount ?? "",
+				currency,
+				o.paymentMethod || "",
+				o.payment ? "paid" : "pending",
+				o.status || "",
+				o.address?.city || "",
+				o.address?.country || "",
+			]),
+		];
+		const csv = rows
+			.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+			.join("\n");
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
 	useEffect(() => {
 		fetchAllOrders();
 	}, [token]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	return (
 		<div>
-			<h3 className="mb-4 text-lg font-medium text-gray-800 dark:text-gray-100">Orders</h3>
+			<div className="flex flex-col gap-3 mb-4 sm:flex-row sm:items-end sm:justify-between">
+				<div>
+					<h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">Orders</h3>
+					<p className="text-xs text-gray-500 dark:text-gray-400">
+						Showing {filtered.length} of {orders.length} orders
+					</p>
+				</div>
+				<button
+					type="button"
+					onClick={exportCsv}
+					className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+				>
+					Export CSV
+				</button>
+			</div>
+
+			<div className="grid gap-2 p-3 mb-4 bg-white rounded-2xl shadow-sm sm:grid-cols-4 dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">
+				<input
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					placeholder="Search order, customer, email, phone..."
+					className="px-3 py-2 text-sm border rounded-lg sm:col-span-2 dark:bg-gray-950 dark:border-gray-700"
+				/>
+				<select
+					value={statusFilter}
+					onChange={(e) => setStatusFilter(e.target.value)}
+					className="px-3 py-2 text-sm border rounded-lg dark:bg-gray-950 dark:border-gray-700"
+				>
+					<option value="all">All statuses</option>
+					<option value="Order Placed">Order Placed</option>
+					<option value="Packing">Packing</option>
+					<option value="Shipped">Shipped</option>
+					<option value="Out For Delivery">Out For Delivery</option>
+					<option value="Delivered">Delivered</option>
+				</select>
+				<select
+					value={paymentFilter}
+					onChange={(e) => setPaymentFilter(e.target.value)}
+					className="px-3 py-2 text-sm border rounded-lg dark:bg-gray-950 dark:border-gray-700"
+				>
+					<option value="all">All payments</option>
+					<option value="paid">Paid</option>
+					<option value="pending">Pending</option>
+				</select>
+			</div>
+
 			<div>
-				{orders.map((order) => {
+				{filtered.length === 0 ? (
+					<p className="px-3 py-10 text-sm text-center text-gray-500 bg-white rounded-2xl dark:bg-gray-900 dark:text-gray-400">No orders match your filters.</p>
+				) : null}
+				{filtered.map((order) => {
 					const editable = canEditOrder(order.status);
 					const isEditing = editingId === order._id;
 					return (

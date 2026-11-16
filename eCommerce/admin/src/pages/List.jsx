@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { backendUrl, currency } from "../App";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -9,6 +9,9 @@ const List = ({ token }) => {
 	const [editingId, setEditingId] = useState(null);
 	const [editForm, setEditForm] = useState(null);
 	const [saving, setSaving] = useState(false);
+	const [search, setSearch] = useState("");
+	const [categoryFilter, setCategoryFilter] = useState("all");
+	const [bestsellerFilter, setBestsellerFilter] = useState("all");
 
 	const fetchList = async () => {
 		try {
@@ -98,13 +101,104 @@ const List = ({ token }) => {
 		}
 	};
 
+	const categories = useMemo(() => {
+		const set = new Set(list.map((i) => i.category).filter(Boolean));
+		return ["all", ...Array.from(set).sort()];
+	}, [list]);
+
+	const filtered = useMemo(() => {
+		const q = search.trim().toLowerCase();
+		return list.filter((item) => {
+			const matchesSearch =
+				!q ||
+				[item.name, item.category, item.subCategory, item.description]
+					.filter(Boolean)
+					.some((v) => String(v).toLowerCase().includes(q));
+			const matchesCategory = categoryFilter === "all" || item.category === categoryFilter;
+			const matchesBest =
+				bestsellerFilter === "all" ||
+				(bestsellerFilter === "yes" ? !!item.bestseller : !item.bestseller);
+			return matchesSearch && matchesCategory && matchesBest;
+		});
+	}, [list, search, categoryFilter, bestsellerFilter]);
+
+	const exportCsv = () => {
+		const rows = [
+			["id", "name", "category", "subCategory", "price", "bestseller", "sizes", "date"],
+			...filtered.map((p) => [
+				p._id,
+				p.name || "",
+				p.category || "",
+				p.subCategory || "",
+				p.price ?? "",
+				p.bestseller ? "yes" : "no",
+				Array.isArray(p.sizes) ? p.sizes.join("|") : "",
+				p.date ? new Date(p.date).toISOString() : "",
+			]),
+		];
+		const csv = rows
+			.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+			.join("\n");
+		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `products-${new Date().toISOString().slice(0, 10)}.csv`;
+		a.click();
+		URL.revokeObjectURL(url);
+	};
+
 	useEffect(() => {
 		fetchList();
 	}, []);
 
 	return (
 		<>
-			<h3 className="mb-3 text-lg font-medium text-gray-800 dark:text-gray-100">All Products</h3>
+			<div className="flex flex-col gap-3 mb-3 sm:flex-row sm:items-end sm:justify-between">
+				<div>
+					<h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">All Products</h3>
+					<p className="text-xs text-gray-500 dark:text-gray-400">
+						Showing {filtered.length} of {list.length} products
+					</p>
+				</div>
+				<button
+					type="button"
+					onClick={exportCsv}
+					className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+				>
+					Export CSV
+				</button>
+			</div>
+
+			<div className="grid gap-2 p-3 mb-3 bg-white rounded-2xl shadow-sm sm:grid-cols-4 dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">
+				<input
+					value={search}
+					onChange={(e) => setSearch(e.target.value)}
+					placeholder="Search products..."
+					className="px-3 py-2 text-sm border rounded-lg sm:col-span-2 dark:bg-gray-950 dark:border-gray-700"
+				/>
+				<select
+					value={categoryFilter}
+					onChange={(e) => setCategoryFilter(e.target.value)}
+					className="px-3 py-2 text-sm border rounded-lg dark:bg-gray-950 dark:border-gray-700"
+				>
+					{categories.map((c) => (
+						<option key={c} value={c}>
+							{c === "all" ? "All categories" : c}
+						</option>
+					))}
+				</select>
+				<select
+					value={bestsellerFilter}
+					onChange={(e) => setBestsellerFilter(e.target.value)}
+					className="px-3 py-2 text-sm border rounded-lg dark:bg-gray-950 dark:border-gray-700"
+				>
+					<option value="all">All items</option>
+					<option value="yes">Bestsellers</option>
+					<option value="no">Non-bestsellers</option>
+				</select>
+			</div>
+
 			<div className="flex flex-col gap-1 p-2 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">
 				{/* ------------ List Table Title -------------- */}
 				<div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1.2fr] items-center px-3 py-2 text-xs font-medium tracking-wide text-gray-400 uppercase dark:text-gray-500">
@@ -116,7 +210,10 @@ const List = ({ token }) => {
 				</div>
 
 				{/* ------------ Product List ------------------ */}
-				{list.map((item) => (
+				{filtered.length === 0 ? (
+					<p className="px-3 py-10 text-sm text-center text-gray-500 dark:text-gray-400">No products match your filters.</p>
+				) : null}
+				{filtered.map((item) => (
 					<div
 						key={item._id}
 						className="px-3 py-2 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/60"
