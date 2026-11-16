@@ -116,10 +116,13 @@ const Login = () => {
 							{ credential: response.credential }
 						);
 						if (res.data.success) finishSignIn(res.data);
-						else toast.error(res.data.message);
+						else toast.error(res.data.message || "Google sign-in failed. Please try again.");
 					} catch (error) {
 						console.log(error);
-						toast.error("Google sign-in failed. Please try again.");
+						toast.error(
+							error?.response?.data?.message ||
+								"Google sign-in failed. Please try again."
+						);
 					}
 				},
 			});

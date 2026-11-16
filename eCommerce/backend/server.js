@@ -81,27 +81,8 @@ const authLimiter = rateLimit({
 
 app.use("/api", apiLimiter);
 
-//^ API endpoints
-app.use("/api/user", authLimiter, userRouter);
-app.use("/api/newsletter", authLimiter, newsletterRouter);
-app.use("/api/product", productRouter);
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
-app.use("/api/review", reviewRouter);
-app.use("/api/wishlist", wishlistRouter);
-app.use("/api/admin", adminRouter);
-
 app.get("/", (request, response) => {
 	response.send("API working");
-});
-
-app.get("/api/health", async (request, response) => {
-	try {
-		await connectDB();
-		response.json({ success: true, status: "ok" });
-	} catch (error) {
-		response.status(503).json({ success: false, status: "db-unavailable" });
-	}
 });
 
 // Ensure the database is connected before handling API requests. In serverless
@@ -119,6 +100,25 @@ app.use("/api", async (request, response, next) => {
 		});
 	}
 });
+
+app.get("/api/health", async (request, response) => {
+	try {
+		await connectDB();
+		response.json({ success: true, status: "ok" });
+	} catch (error) {
+		response.status(503).json({ success: false, status: "db-unavailable" });
+	}
+});
+
+//^ API endpoints
+app.use("/api/user", authLimiter, userRouter);
+app.use("/api/newsletter", authLimiter, newsletterRouter);
+app.use("/api/product", productRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/review", reviewRouter);
+app.use("/api/wishlist", wishlistRouter);
+app.use("/api/admin", adminRouter);
 
 // Connect once per cold start as an optimization; request middleware above is the
 // source of truth for readiness.
