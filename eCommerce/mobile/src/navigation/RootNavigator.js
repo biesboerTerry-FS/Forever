@@ -1,8 +1,10 @@
 import React from "react";
+import { Pressable } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import HomeScreen from "../screens/HomeScreen";
 import CollectionScreen from "../screens/CollectionScreen";
@@ -45,6 +47,7 @@ const TAB_ICONS = {
 
 function Tabs() {
 	const { cartCount } = useShop();
+	const insets = useSafeAreaInsets();
 
 	return (
 		<Tab.Navigator
@@ -55,9 +58,11 @@ function Tabs() {
 				tabBarStyle: {
 					borderTopColor: colors.line,
 					backgroundColor: colors.bg,
-					height: 58,
-					paddingBottom: 6,
+					// Lift the tab bar above the iPhone home indicator / bottom safe area.
+					paddingBottom: Math.max(6, insets.bottom),
 					paddingTop: 6,
+					height: 52 + Math.max(6, insets.bottom),
+					minHeight: 52 + Math.max(6, insets.bottom),
 				},
 				tabBarLabelStyle: { fontSize: 10 },
 				tabBarIcon: ({ color, size, focused }) => {
@@ -85,16 +90,35 @@ function Tabs() {
 	);
 }
 
+function HeaderBack({ navigation }) {
+	if (!navigation.canGoBack()) return null;
+	return (
+		<Pressable
+			onPress={() => navigation.goBack()}
+			accessibilityRole="button"
+			accessibilityLabel="Go back"
+			style={({ pressed }) => ({
+				opacity: pressed ? 0.6 : 1,
+				padding: 8,
+				marginLeft: -8,
+			})}
+		>
+			<Ionicons name="chevron-back" size={28} color={colors.ink} />
+		</Pressable>
+	);
+}
+
 export default function RootNavigator({ navigationRef }) {
 	return (
 		<NavigationContainer ref={navigationRef} linking={linking}>
 			<Stack.Navigator
-				screenOptions={{
+				screenOptions={({ navigation }) => ({
 					headerTintColor: colors.ink,
 					headerTitleStyle: { fontSize: 16 },
 					headerStyle: { backgroundColor: colors.bg },
 					contentStyle: { backgroundColor: colors.bg },
-				}}
+					headerLeft: () => <HeaderBack navigation={navigation} />,
+				})}
 			>
 				<Stack.Screen
 					name="Tabs"

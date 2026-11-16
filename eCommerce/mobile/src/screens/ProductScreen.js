@@ -215,19 +215,22 @@ export default function ProductScreen({ route, navigation }) {
 						onPress={onToggleWishlist}
 						accessibilityRole="button"
 						accessibilityLabel={saved ? "Remove from wishlist" : "Save to wishlist"}
-						style={{
-							width: 40,
-							height: 40,
-							borderRadius: 20,
+						hitSlop={12}
+						style={({ pressed }) => ({
+							width: 44,
+							height: 44,
+							borderRadius: 22,
 							borderWidth: 1,
 							borderColor: colors.line,
+							backgroundColor: saved ? "#fef2f2" : colors.bg,
 							alignItems: "center",
 							justifyContent: "center",
-						}}
+							opacity: pressed ? 0.7 : 1,
+						})}
 					>
 						<Ionicons
 							name={saved ? "heart" : "heart-outline"}
-							size={20}
+							size={22}
 							color={saved ? colors.danger : colors.ink}
 						/>
 					</Pressable>
