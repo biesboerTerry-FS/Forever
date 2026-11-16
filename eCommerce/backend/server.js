@@ -104,8 +104,24 @@ app.get("/api/health", async (request, response) => {
 	}
 });
 
-// Connect once per cold start. Requests made while the connection is still
-// opening are buffered by Mongoose.
+// Ensure the database is connected before handling API requests. In serverless
+// environments, requests may arrive on cold starts or after the connection drops.
+app.use("/api", async (request, response, next) => {
+	if (request.path === "/health") return next();
+	try {
+		await connectDB();
+		next();
+	} catch (error) {
+		console.error("Database unavailable:", error.message);
+		response.status(503).json({
+			success: false,
+			message: "Database connection unavailable. Please try again shortly.",
+		});
+	}
+});
+
+// Connect once per cold start as an optimization; request middleware above is the
+// source of truth for readiness.
 connectDB().catch(() => {});
 connectCloudinary();
 
