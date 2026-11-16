@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { SignIn, useAuth } from "@clerk/expo/web";
+import { useAuth } from "@clerk/react";
+import { SignIn } from "@clerk/expo/web";
 import { useShop } from "../context/ShopContext";
 import { colors, spacing } from "../theme";
 

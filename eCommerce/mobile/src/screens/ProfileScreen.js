@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth, useUser } from "@clerk/expo";
+import { useAuth, useUser } from "@clerk/react";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";

@@ -8,7 +8,7 @@ import React, {
 	useState,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAuth, useUser } from "@clerk/expo";
+import { useAuth, useUser } from "@clerk/react";
 import { api } from "../api";
 import {
 	registerForPushNotificationsAsync,
