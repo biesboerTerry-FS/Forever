@@ -101,3 +101,11 @@ Use different configuration for **Preview** and **Production** to avoid test tra
 ### Accessibility/performance sanity
 - [ ] Keyboard navigation, focus states, and dark mode on key pages
 - [ ] Spot-check Lighthouse/axe on critical routes if CI thresholds or content changed
+
+## 9. Common Vercel issues
+- **Frontend shows "Network Error" / products not loading:** `VITE_BACKEND_URL` is missing, points to `localhost`, or points to the wrong/protected backend URL in the Vercel build. Set it to the **public backend base URL** (no `/api` suffix), redeploy frontend, and confirm browser requests go to `https://<backend>/api/...`.
+- **Frontend gets 404 on API calls:** often caused by `VITE_BACKEND_URL` ending with `/api` (app code appends `/api/...`, producing `/api/api/...`). Use the backend base URL only.
+- **Admin login returns 405:** `VITE_BACKEND_URL` in the admin project is pointing to a non-backend URL (e.g. frontend/admin static site) or is malformed. Set it to the public backend base URL and redeploy admin.
+- **Backend unreachable/protected:** Vercel Deployment Protection/SSO on preview URLs can block browser/API access. Use a public production backend domain and verify `GET /api/health`.
+- **CORS errors:** ensure backend `CORS_ORIGINS` includes deployed frontend/admin domains and `FRONTEND_URL` is correct, then redeploy backend.
+- **Env changes not reflected:** `VITE_*` changes require frontend/admin rebuilds; backend env changes require backend redeploy.
