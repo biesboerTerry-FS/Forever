@@ -64,7 +64,7 @@ const List = ({ token }) => {
 						key={index}
 					>
 						<img
-							className="w-12 rounded-lg"
+							className="object-cover w-12 h-12 rounded-lg bg-gray-100 dark:bg-gray-800"
 							src={firstImage(item.image, 120)}
 							alt={item.name}
 							loading="lazy"
