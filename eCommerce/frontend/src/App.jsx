@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
 import Home from "./pages/Home";
@@ -14,6 +14,7 @@ import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
 import ErrorBoundary from "./components/ErrorBoundary";
+import CookieConsent, { getCookieConsent } from "./components/CookieConsent";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Verify from "./pages/Verify";
@@ -29,6 +30,7 @@ import { ShopContext } from "./context/ShopContext";
 
 const App = () => {
 	const { dark } = useContext(ShopContext);
+	const [consent, setConsent] = useState(getCookieConsent);
 
 	useEffect(() => {
 		const onOffline = () => toast.error("You appear to be offline. Some actions may not work.");
@@ -38,6 +40,16 @@ const App = () => {
 		return () => {
 			window.removeEventListener("offline", onOffline);
 			window.removeEventListener("online", onOnline);
+		};
+	}, []);
+
+	useEffect(() => {
+		const sync = () => setConsent(getCookieConsent());
+		window.addEventListener("cookie-consent-changed", sync);
+		window.addEventListener("storage", sync);
+		return () => {
+			window.removeEventListener("cookie-consent-changed", sync);
+			window.removeEventListener("storage", sync);
 		};
 	}, []);
 
@@ -89,7 +101,8 @@ const App = () => {
 				</ErrorBoundary>
 			</main>
 			<Footer />
-			<Analytics />
+			<CookieConsent />
+			{consent.analytics ? <Analytics /> : null}
 		</div>
 	);
 };

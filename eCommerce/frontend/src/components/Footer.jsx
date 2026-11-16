@@ -88,9 +88,16 @@ const Footer = () => {
 			</div>
 			<div>
 				<hr />
-				<p className="py-5 text-sm text-center text-gray-600 dark:text-gray-300">
-					Copyright © 2026 Forever. All rights reserved.
-				</p>
+				<div className="flex flex-col items-center gap-2 py-5 text-sm text-center text-gray-600 dark:text-gray-300 sm:flex-row sm:justify-between">
+					<p>Copyright © 2026 Forever. All rights reserved.</p>
+					<button
+						type="button"
+						onClick={() => window.dispatchEvent(new Event("open-cookie-settings"))}
+						className="underline hover:text-black dark:hover:text-white"
+					>
+						Cookie Settings
+					</button>
+				</div>
 			</div>
 		</div>
 	);

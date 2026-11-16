@@ -3,6 +3,7 @@ import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
+import { downloadCsv, downloadPdf } from "../utils/export";
 
 const canEditOrder = (status) => {
 	const s = String(status || "").trim().toLowerCase();
@@ -143,16 +144,21 @@ const Orders = ({ token }) => {
 				o.address?.country || "",
 			]),
 		];
-		const csv = rows
-			.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
-			.join("\n");
-		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `orders-${new Date().toISOString().slice(0, 10)}.csv`;
-		a.click();
-		URL.revokeObjectURL(url);
+		downloadCsv(`orders-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+	};
+
+	const exportPdf = () => {
+		const headers = ["Order ID", "Date", "Customer", "Items", "Amount", "Payment", "Status"];
+		const rows = filtered.map((o) => [
+			o._id,
+			o.date ? new Date(o.date).toLocaleDateString() : "",
+			`${o.address?.firstName || ""} ${o.address?.lastName || ""}`.trim(),
+			Array.isArray(o.items) ? o.items.length : 0,
+			`${currency}${o.amount ?? ""}`,
+			o.payment ? "Paid" : "Pending",
+			o.status || "",
+		]);
+		downloadPdf("Orders List", headers, rows);
 	};
 
 	useEffect(() => {
@@ -168,13 +174,22 @@ const Orders = ({ token }) => {
 						Showing {filtered.length} of {orders.length} orders
 					</p>
 				</div>
-				<button
-					type="button"
-					onClick={exportCsv}
-					className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-				>
-					Export CSV
-				</button>
+				<div className="flex gap-2">
+					<button
+						type="button"
+						onClick={exportCsv}
+						className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					>
+						Export CSV
+					</button>
+					<button
+						type="button"
+						onClick={exportPdf}
+						className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					>
+						Export PDF
+					</button>
+				</div>
 			</div>
 
 			<div className="grid gap-2 p-3 mb-4 bg-white rounded-2xl shadow-sm sm:grid-cols-4 dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">

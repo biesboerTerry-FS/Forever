@@ -3,6 +3,7 @@ import { backendUrl, currency } from "../App";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { firstImage } from "../utils/image";
+import { downloadCsv, downloadPdf } from "../utils/export";
 
 const List = ({ token }) => {
 	const [list, setList] = useState([]);
@@ -136,16 +137,20 @@ const List = ({ token }) => {
 				p.date ? new Date(p.date).toISOString() : "",
 			]),
 		];
-		const csv = rows
-			.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
-			.join("\n");
-		const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement("a");
-		a.href = url;
-		a.download = `products-${new Date().toISOString().slice(0, 10)}.csv`;
-		a.click();
-		URL.revokeObjectURL(url);
+		downloadCsv(`products-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+	};
+
+	const exportPdf = () => {
+		const headers = ["Name", "Category", "Subcategory", "Price", "Bestseller", "Sizes"];
+		const rows = filtered.map((p) => [
+			p.name || "",
+			p.category || "",
+			p.subCategory || "",
+			`${currency}${p.price ?? ""}`,
+			p.bestseller ? "Yes" : "No",
+			Array.isArray(p.sizes) ? p.sizes.join(", ") : "",
+		]);
+		downloadPdf("Items List", headers, rows);
 	};
 
 	useEffect(() => {
@@ -161,13 +166,22 @@ const List = ({ token }) => {
 						Showing {filtered.length} of {list.length} products
 					</p>
 				</div>
-				<button
-					type="button"
-					onClick={exportCsv}
-					className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-				>
-					Export CSV
-				</button>
+				<div className="flex gap-2">
+					<button
+						type="button"
+						onClick={exportCsv}
+						className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					>
+						Export CSV
+					</button>
+					<button
+						type="button"
+						onClick={exportPdf}
+						className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+					>
+						Export PDF
+					</button>
+				</div>
 			</div>
 
 			<div className="grid gap-2 p-3 mb-3 bg-white rounded-2xl shadow-sm sm:grid-cols-4 dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">

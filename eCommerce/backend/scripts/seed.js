@@ -25,6 +25,10 @@ import productModel from "../models/productModel.js";
 import userModel from "../models/userModel.js";
 import orderModel from "../models/orderModel.js";
 import reviewModel from "../models/reviewModel.js";
+import employeeModel from "../models/employeeModel.js";
+import scheduleModel from "../models/scheduleModel.js";
+import learningModel from "../models/learningModel.js";
+import payrollModel from "../models/payrollModel.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -346,6 +350,69 @@ async function main() {
 	}));
 	await reviewModel.insertMany(reviews);
 	console.log(`Inserted ${reviews.length} sample reviews.`);
+
+	// HR demo data (employees/managers, schedule, learning, payroll)
+	await Promise.all([
+		employeeModel.deleteMany({}),
+		scheduleModel.deleteMany({}),
+		learningModel.deleteMany({}),
+		payrollModel.deleteMany({}),
+	]);
+
+	const employees = await employeeModel.insertMany([
+		{ name: "Alex Morgan", email: "alex.manager@forever.test", role: "Store Manager", department: "Retail", status: "Active", phone: "555-0101", hourlyRate: 32, hireDate: now - 400 * 24 * 60 * 60 * 1000, notes: "Oversees store operations and team performance." },
+		{ name: "Jordan Lee", email: "jordan.manager@forever.test", role: "Assistant Manager", department: "Retail", status: "Active", phone: "555-0102", hourlyRate: 28, hireDate: now - 320 * 24 * 60 * 60 * 1000, notes: "Supports scheduling and merchandising." },
+		{ name: "Sam Rivera", email: "sam.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0103", hourlyRate: 20, hireDate: now - 200 * 24 * 60 * 60 * 1000 },
+		{ name: "Taylor Kim", email: "taylor.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0104", hourlyRate: 19, hireDate: now - 150 * 24 * 60 * 60 * 1000 },
+		{ name: "Casey Patel", email: "casey.fulfillment@forever.test", role: "Fulfillment Specialist", department: "Operations", status: "Active", phone: "555-0105", hourlyRate: 22, hireDate: now - 180 * 24 * 60 * 60 * 1000 },
+		{ name: "Riley Chen", email: "riley.support@forever.test", role: "Customer Support", department: "Support", status: "On Leave", phone: "555-0106", hourlyRate: 21, hireDate: now - 120 * 24 * 60 * 60 * 1000 },
+	]);
+	console.log(`Inserted ${employees.length} employees.`);
+
+	const fmtDate = (d) => d.toISOString().slice(0, 10);
+	const today = new Date();
+	const schedules = [];
+	for (let i = 0; i < 7; i++) {
+		const d = new Date(today);
+		d.setDate(today.getDate() + i);
+		const date = fmtDate(d);
+		const e1 = employees[0], e2 = employees[2], e3 = employees[4];
+		schedules.push(
+			{ employeeId: String(e1._id), employeeName: e1.name, date, startTime: "09:00", endTime: "17:00", role: "Floor Lead", location: "Store", status: "Scheduled" },
+			{ employeeId: String(e2._id), employeeName: e2.name, date, startTime: "10:00", endTime: "18:00", role: "Sales Floor", location: "Store", status: "Scheduled" },
+			{ employeeId: String(e3._id), employeeName: e3.name, date, startTime: "08:00", endTime: "16:00", role: "Fulfillment", location: "Back Office", status: "Scheduled" }
+		);
+	}
+	await scheduleModel.insertMany(schedules);
+	console.log(`Inserted ${schedules.length} schedule entries.`);
+
+	const due = (days) => { const d = new Date(today); d.setDate(d.getDate() + days); return fmtDate(d); };
+	const completed = (daysAgo) => { const d = new Date(today); d.setDate(d.getDate() - daysAgo); return fmtDate(d); };
+	await learningModel.insertMany([
+		{ employeeId: String(employees[0]._id), employeeName: employees[0].name, course: "Store Leadership Essentials", module: "Coaching & Feedback", status: "Completed", progress: 100, dueDate: due(-10), completedDate: completed(12), score: 96, notes: "Demo record" },
+		{ employeeId: String(employees[2]._id), employeeName: employees[2].name, course: "Customer Experience", module: "Returns & Exchanges", status: "In Progress", progress: 60, dueDate: due(5), notes: "Demo record" },
+		{ employeeId: String(employees[3]._id), employeeName: employees[3].name, course: "Product Knowledge", module: "New Season Collection", status: "Assigned", progress: 0, dueDate: due(10), notes: "Demo record" },
+		{ employeeId: String(employees[4]._id), employeeName: employees[4].name, course: "Inventory & Fulfillment", module: "Pick/Pack Accuracy", status: "Completed", progress: 100, dueDate: due(-3), completedDate: completed(2), score: 92, notes: "Demo record" },
+		{ employeeId: String(employees[1]._id), employeeName: employees[1].name, course: "Loss Prevention Basics", module: "Store Safety", status: "Assigned", progress: 0, dueDate: due(14), notes: "Demo record" },
+	]);
+	console.log("Inserted learning demo records.");
+
+	const periodStart = fmtDate(new Date(today.getFullYear(), today.getMonth(), 1));
+	const periodEnd = fmtDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+	const payrollRows = employees.slice(0, 4).map((e, idx) => {
+		const hours = [80, 76, 64, 60][idx];
+		const bonus = idx === 0 ? 200 : 0;
+		const deductions = [120, 95, 70, 65][idx];
+		const gross = hours * e.hourlyRate + bonus;
+		const net = gross - deductions;
+		return {
+			employeeId: String(e._id), employeeName: e.name, periodStart, periodEnd,
+			hours, hourlyRate: e.hourlyRate, bonus, deductions, grossPay: gross, netPay: net,
+			status: idx < 2 ? "Paid" : "Approved", notes: "Demo payroll record",
+		};
+	});
+	await payrollModel.insertMany(payrollRows);
+	console.log(`Inserted ${payrollRows.length} payroll records.`);
 
 	console.log("\nSeed complete ✔");
 	console.log(`  Admin login:  ${process.env.ADMIN_EMAIL} / ${process.env.ADMIN_PASSWORD}  (from backend/.env)`);
