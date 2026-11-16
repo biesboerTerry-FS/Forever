@@ -11,7 +11,16 @@ const rawBase =
 		: process.env.VERCEL_URL
 			? `https://${process.env.VERCEL_URL}`
 			: "http://localhost:5178");
-const base = rawBase.replace(/\/$/, "");
+
+const normalizeBase = (value) => {
+	const trimmed = String(value || "").trim().replace(/\/$/, "");
+	if (!trimmed) return "http://localhost:5178";
+	if (/^https?:\/\//i.test(trimmed)) return trimmed;
+	if (/^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(trimmed)) return `http://${trimmed}`;
+	return `https://${trimmed}`;
+};
+
+const base = normalizeBase(rawBase);
 
 const routes = [
 	"",
