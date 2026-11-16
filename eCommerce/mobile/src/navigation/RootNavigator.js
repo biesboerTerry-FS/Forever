@@ -15,6 +15,7 @@ import ProductScreen from "../screens/ProductScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import OrdersScreen from "../screens/OrdersScreen";
 import LoginScreen from "../screens/LoginScreen";
+import SignUpScreen from "../screens/SignUpScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import { useShop } from "../context/ShopContext";
@@ -30,6 +31,7 @@ const linking = {
 			ResetPassword: "reset-password",
 			ForgotPassword: "forgot-password",
 			Login: "login",
+			SignUp: "signup",
 			Orders: "orders",
 			Product: "product/:id",
 		},
@@ -140,6 +142,11 @@ export default function RootNavigator({ navigationRef }) {
 					name="Login"
 					component={LoginScreen}
 					options={{ title: "Account" }}
+				/>
+				<Stack.Screen
+					name="SignUp"
+					component={SignUpScreen}
+					options={{ title: "Create account" }}
 				/>
 				<Stack.Screen
 					name="ForgotPassword"

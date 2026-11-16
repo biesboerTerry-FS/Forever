@@ -30,7 +30,7 @@ export default function LoginScreen({ navigation }) {
 		>
 			<View style={{ width: "100%", maxWidth: 400 }}>
 				<SignIn
-					signUpUrl="/login"
+					signUpUrl="/signup"
 					fallbackRedirectUrl="/"
 					appearance={{
 						variables: {
