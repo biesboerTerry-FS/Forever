@@ -4,9 +4,11 @@ import React, {
 	useContext,
 	useEffect,
 	useMemo,
+	useRef,
 	useState,
 } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuth, useUser } from "@clerk/expo";
 import { api } from "../api";
 import {
 	registerForPushNotificationsAsync,
@@ -23,6 +25,46 @@ export const ShopProvider = ({ children }) => {
 	const [token, setToken] = useState("");
 	const [user, setUser] = useState(null);
 	const [booted, setBooted] = useState(false);
+	const { isSignedIn, getToken, signOut: clerkSignOut } = useAuth();
+	const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+	const syncingRef = useRef(false);
+
+	// Sync Clerk session with the backend JWT used by cart/wishlist/orders.
+	useEffect(() => {
+		const sync = async () => {
+			if (syncingRef.current) return;
+			if (!clerkLoaded) return;
+
+			if (!isSignedIn) {
+				if (token) {
+					await signOut();
+				}
+				return;
+			}
+
+			// Already have a backend token — assume it belongs to the signed-in Clerk user.
+			if (token) return;
+
+			try {
+				syncingRef.current = true;
+				const clerkToken = await getToken();
+				if (!clerkToken) return;
+				const data = await api.post("/api/user/clerk", { clerkToken });
+				if (data.success) {
+					await signIn(data);
+				} else {
+					console.warn("Clerk sync failed:", data.message);
+				}
+			} catch (error) {
+				console.warn("Clerk sync error:", error.message);
+			} finally {
+				syncingRef.current = false;
+			}
+		};
+
+		sync();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isSignedIn, clerkLoaded, clerkUser?.id, token]);
 
 	useEffect(() => {
 		const boot = async () => {
@@ -92,7 +134,13 @@ export const ShopProvider = ({ children }) => {
 		setCart({});
 		setWishlist([]);
 		await AsyncStorage.multiRemove(["token", "user"]);
-	}, [token]);
+		// Also sign out of Clerk so the session doesn't re-sync.
+		try {
+			await clerkSignOut?.();
+		} catch {
+			// Ignore errors if Clerk isn't loaded or already signed out.
+		}
+	}, [token, clerkSignOut]);
 
 	const addToCart = useCallback(
 		async (itemId, size) => {

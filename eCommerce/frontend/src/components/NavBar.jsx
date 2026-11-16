@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import { assets } from "../assets/assets.js";
 import { NavLink, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useAuth } from "@clerk/react";
 import { ShopContext } from "../context/ShopContext.jsx";
 import ThemeToggle from "./ThemeToggle.jsx";
 
@@ -26,6 +27,7 @@ const NavBar = () => {
 		toggleTheme,
 	} = useContext(ShopContext);
 
+	const { isSignedIn, signOut } = useAuth();
 	const cartCount = getCartCount();
 	const prevCartCount = useRef(cartCount);
 
@@ -45,14 +47,18 @@ const NavBar = () => {
 		if (!location.pathname.includes("collection")) navigate("/collection");
 	};
 
-	const logout = () => {
-		navigate("/login");
+	const logout = async () => {
+		// Clear local backend session immediately for responsive UI, then sign out of Clerk.
 		localStorage.removeItem("token");
 		localStorage.removeItem("user");
 		setToken("");
 		setUser(null);
 		setCartItems({});
 		setWishlist([]);
+		setProfileOpen(false);
+		if (isSignedIn) {
+			await signOut();
+		}
 	};
 
 	return (
@@ -123,10 +129,12 @@ const NavBar = () => {
 					<button
 						type="button"
 						onClick={() =>
-							token ? setProfileOpen((open) => !open) : navigate("/login")
+							isSignedIn || token
+								? setProfileOpen((open) => !open)
+								: navigate("/login")
 						}
-						aria-label={token ? "Account menu" : "Sign in"}
-						aria-expanded={token ? profileOpen : undefined}
+						aria-label={isSignedIn || token ? "Account menu" : "Sign in"}
+						aria-expanded={isSignedIn || token ? profileOpen : undefined}
 						className="flex items-center justify-center"
 					>
 						<img
@@ -136,7 +144,7 @@ const NavBar = () => {
 						/>
 					</button>
 					{/* Dropdown menu */}
-					{token && (
+					{(isSignedIn || token) && (
 						<div
 							className={`absolute right-0 pt-4 dropdown-menu ${
 								profileOpen ? "block" : "hidden group-hover:block group-focus-within:block"

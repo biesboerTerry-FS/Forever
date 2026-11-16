@@ -4,6 +4,7 @@ import {
 	resgisterUser,
 	adminLogin,
 	googleLogin,
+	clerkLogin,
 	demoOAuthLogin,
 	forgotPassword,
 	resetPassword,
@@ -18,6 +19,7 @@ userRouter.post("/register", resgisterUser);
 userRouter.post("/login", loginUser);
 userRouter.post("/admin", adminLogin);
 userRouter.post("/google", googleLogin);
+userRouter.post("/clerk", clerkLogin);
 userRouter.post("/oauth/demo", demoOAuthLogin);
 userRouter.post("/forgot-password", forgotPassword);
 userRouter.post("/reset-password", resetPassword);

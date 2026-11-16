@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
+import { verifyToken } from "@clerk/backend";
 import { sendPasswordResetEmail } from "../utils/email.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
@@ -254,6 +255,57 @@ const googleLogin = async (request, response) => {
 	}
 };
 
+//& Clerk sign-in: verify the Clerk session token sent by the client
+const clerkLogin = async (request, response) => {
+	try {
+		const { clerkToken } = request.body;
+		if (!clerkToken) {
+			return response.json({
+				success: false,
+				message: "Missing Clerk session token",
+			});
+		}
+		if (!process.env.CLERK_SECRET_KEY) {
+			return response.json({
+				success: false,
+				message: "Clerk is not configured on the server.",
+			});
+		}
+
+		const session = await verifyToken(clerkToken, {
+			secretKey: process.env.CLERK_SECRET_KEY,
+		});
+
+		const email = String(session.email || "").toLowerCase();
+		if (!email) {
+			return response.json({
+				success: false,
+				message: "Clerk session does not include an email.",
+			});
+		}
+
+		const name = [session.firstName, session.lastName]
+			.filter(Boolean)
+			.join(" ")
+			.trim() || email.split("@")[0];
+
+		const result = await signInSocialUser({
+			email,
+			name,
+			picture: session.imageUrl || "",
+			provider: "clerk",
+		});
+
+		response.json({ success: true, ...result });
+	} catch (error) {
+		console.log(error);
+		response.json({
+			success: false,
+			message: "Clerk sign-in failed. Please try again.",
+		});
+	}
+};
+
 //& Demo social sign-in
 // Lets portfolio reviewers try the social-login UX when no Google client ID
 // is configured. Disable with ALLOW_DEMO_OAUTH=false in any real deployment.
@@ -409,6 +461,7 @@ export {
 	resgisterUser,
 	adminLogin,
 	googleLogin,
+	clerkLogin,
 	demoOAuthLogin,
 	forgotPassword,
 	resetPassword,

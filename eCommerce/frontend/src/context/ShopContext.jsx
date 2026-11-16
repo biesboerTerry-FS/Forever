@@ -1,6 +1,7 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useAuth, useUser } from "@clerk/react";
 import axios from "axios";
 
 export const ShopContext = createContext();
@@ -39,6 +40,60 @@ const ShopContextProvider = (props) => {
 		}
 	});
 	const navigate = useNavigate();
+	const { isSignedIn, getToken } = useAuth();
+	const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
+	const syncingRef = useRef(false);
+
+	// Sync Clerk session with the backend JWT used by cart/wishlist/orders.
+	useEffect(() => {
+		const sync = async () => {
+			if (syncingRef.current) return;
+			if (!clerkLoaded) return;
+
+			if (!isSignedIn) {
+				if (token) {
+					localStorage.removeItem("token");
+					localStorage.removeItem("user");
+					setToken("");
+					setUser(null);
+					setCartItems({});
+					setWishlist([]);
+				}
+				return;
+			}
+
+			// Already have a backend token — assume it belongs to the signed-in Clerk user.
+			if (token) return;
+
+			try {
+				syncingRef.current = true;
+				const clerkToken = await getToken();
+				if (!clerkToken) return;
+				const response = await axios.post(
+					backendUrl + "/api/user/clerk",
+					{ clerkToken }
+				);
+				if (response.data.success) {
+					setToken(response.data.token);
+					localStorage.setItem("token", response.data.token);
+					if (response.data.user) {
+						setUser(response.data.user);
+						localStorage.setItem("user", JSON.stringify(response.data.user));
+					}
+				} else {
+					toast.error(response.data.message || "Sign-in sync failed.");
+				}
+			} catch (error) {
+				console.log(error);
+				toast.error(error.message || "Sign-in sync failed.");
+			} finally {
+				syncingRef.current = false;
+			}
+		};
+
+		sync();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isSignedIn, clerkLoaded, clerkUser?.id, token, backendUrl]);
 
 	const addToCart = async (itemId, size) => {
 		if (!size) {

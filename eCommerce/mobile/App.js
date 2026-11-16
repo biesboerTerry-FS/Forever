@@ -2,8 +2,11 @@ import React, { useEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
+import { ClerkProvider, tokenCache } from "@clerk/expo";
 import { ShopProvider } from "./src/context/ShopContext";
 import RootNavigator from "./src/navigation/RootNavigator";
+
+const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 export default function App() {
 	const navigationRef = useRef(null);
@@ -21,11 +24,16 @@ export default function App() {
 	}, []);
 
 	return (
-		<SafeAreaProvider>
-			<ShopProvider>
-				<StatusBar style="dark" />
-				<RootNavigator navigationRef={navigationRef} />
-			</ShopProvider>
-		</SafeAreaProvider>
+		<ClerkProvider
+			tokenCache={tokenCache}
+			publishableKey={clerkPublishableKey}
+		>
+			<SafeAreaProvider>
+				<ShopProvider>
+					<StatusBar style="dark" />
+					<RootNavigator navigationRef={navigationRef} />
+				</ShopProvider>
+			</SafeAreaProvider>
+		</ClerkProvider>
 	);
 }
