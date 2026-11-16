@@ -1,7 +1,6 @@
 import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuth, useUser } from "@clerk/react";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
@@ -31,9 +30,6 @@ function LinkRow({ icon, label, onPress }) {
 
 export default function ProfileScreen({ navigation }) {
 	const { user, token, wishlist, signOut } = useShop();
-	const { isSignedIn, isLoaded } = useAuth();
-	const { user: clerkUser } = useUser();
-	const showSignedIn = token || isSignedIn;
 
 	const confirmLogout = () => {
 		Alert.alert("Log out", "Are you sure you want to log out?", [
@@ -56,7 +52,7 @@ export default function ProfileScreen({ navigation }) {
 					My account
 				</Text>
 
-				{showSignedIn ? (
+				{token && user ? (
 					<View
 						style={{
 							flexDirection: "row",
@@ -78,15 +74,13 @@ export default function ProfileScreen({ navigation }) {
 							}}
 						>
 							<Text style={{ color: "#fff", fontSize: 18, fontWeight: "600" }}>
-								{(user?.name || clerkUser?.firstName || "U")?.[0]?.toUpperCase()}
+								{user.name?.[0]?.toUpperCase() || "U"}
 							</Text>
 						</View>
 						<View style={{ marginLeft: 12, flex: 1 }}>
-							<Text style={{ fontWeight: "600", fontSize: 15 }}>
-								{user?.name || clerkUser?.fullName || clerkUser?.firstName || "Account"}
-							</Text>
+							<Text style={{ fontWeight: "600", fontSize: 15 }}>{user.name}</Text>
 							<Text style={{ color: colors.muted, fontSize: 12, marginTop: 2 }}>
-								{user?.email || clerkUser?.primaryEmailAddress?.emailAddress || ""}
+								{user.email}
 							</Text>
 						</View>
 						<View
@@ -98,7 +92,7 @@ export default function ProfileScreen({ navigation }) {
 							}}
 						>
 							<Text style={{ fontSize: 10, color: colors.muted }}>
-								{isSignedIn ? "CLERK" : user?.provider === "local" ? "EMAIL" : "GOOGLE"}
+								{user.provider === "local" ? "EMAIL" : "GOOGLE"}
 							</Text>
 						</View>
 					</View>
@@ -137,7 +131,7 @@ export default function ProfileScreen({ navigation }) {
 					/>
 				</View>
 
-				{showSignedIn ? (
+				{token ? (
 					<Button
 						title="LOG OUT"
 						onPress={confirmLogout}

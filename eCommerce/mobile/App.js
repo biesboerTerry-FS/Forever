@@ -5,6 +5,7 @@ import * as Notifications from "expo-notifications";
 import { ClerkProvider, tokenCache } from "@clerk/expo";
 import { ShopProvider } from "./src/context/ShopContext";
 import RootNavigator from "./src/navigation/RootNavigator";
+import ClerkSync from "./src/components/ClerkSync";
 
 const clerkPublishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -27,10 +28,12 @@ export default function App() {
 		<ClerkProvider
 			tokenCache={tokenCache}
 			publishableKey={clerkPublishableKey}
+			afterSignOutUrl="/"
 		>
 			<SafeAreaProvider>
 				<ShopProvider>
 					<StatusBar style="dark" />
+					<ClerkSync />
 					<RootNavigator navigationRef={navigationRef} />
 				</ShopProvider>
 			</SafeAreaProvider>
