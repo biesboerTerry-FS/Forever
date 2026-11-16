@@ -35,11 +35,39 @@ const Sidebar = () => {
 					<p className="hidden md:block">Add Items</p>
 				</NavLink>
 				<NavLink className={linkClass} to="/list">
-					<img className="w-5 h-5 shrink-0 dark:invert" src={assets.order_icon} alt="" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						strokeWidth="1.6"
+						stroke="currentColor"
+						className="w-5 h-5 shrink-0"
+						aria-hidden="true"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M8.25 6.75h12M8.25 12h12M8.25 17.25h12M3.75 6.75h.007v.008H3.75V6.75zm0 5.25h.007v.008H3.75V12zm0 5.25h.007v.008H3.75v-.008z"
+						/>
+					</svg>
 					<p className="hidden md:block">List Items</p>
 				</NavLink>
 				<NavLink className={linkClass} to="/orders">
-					<img className="w-5 h-5 shrink-0 dark:invert" src={assets.order_icon} alt="" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						strokeWidth="1.6"
+						stroke="currentColor"
+						className="w-5 h-5 shrink-0"
+						aria-hidden="true"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125v-3.026a2.25 2.25 0 00-.659-1.591l-3.099-3.099A2.25 2.25 0 0015.526 9H14.25V5.625c0-.621-.504-1.125-1.125-1.125h-9A1.125 1.125 0 003 5.625v7.5M14.25 9h1.276a.75.75 0 01.53.22l2.724 2.724a.75.75 0 01.22.53v1.776"
+						/>
+					</svg>
 					<p className="hidden md:block">Orders</p>
 				</NavLink>
 			</div>
