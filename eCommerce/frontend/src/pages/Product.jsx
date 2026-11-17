@@ -4,6 +4,7 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import RelatedProducts from "../components/RelatedProducts";
 import { imageUrl } from "../utils/image";
+import { addRecentlyViewed } from "../utils/recentlyViewed";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -88,6 +89,8 @@ const Product = () => {
 	// Basic per-product SEO: title, description and Product structured data.
 	useEffect(() => {
 		if (!productData) return;
+
+		addRecentlyViewed(productData._id);
 
 		const previousTitle = document.title;
 		document.title = `${productData.name} | Forever`;
