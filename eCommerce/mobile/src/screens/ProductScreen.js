@@ -15,6 +15,7 @@ import StarRating from "../components/StarRating";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api } from "../api";
+import { toastSuccess, toastError } from "../utils/toast";
 import { colors, money, spacing } from "../theme";
 
 export default function ProductScreen({ route, navigation }) {
@@ -72,12 +73,9 @@ export default function ProductScreen({ route, navigation }) {
 		try {
 			setBusy(true);
 			await addToCart(product._id, size);
-			Alert.alert("Added to cart", `${product.name} is in your bag.`, [
-				{ text: "Keep shopping", style: "cancel" },
-				{ text: "View cart", onPress: () => navigation.navigate("Cart") },
-			]);
+			toastSuccess("Added to bag", `${product.name} is in your bag.`);
 		} catch (error) {
-			Alert.alert("Can't add to cart", error.message);
+			toastError("Can't add to bag", error.message);
 		} finally {
 			setBusy(false);
 		}
@@ -86,17 +84,20 @@ export default function ProductScreen({ route, navigation }) {
 	const onToggleWishlist = async () => {
 		try {
 			const result = await toggleWishlist(product._id);
-			Alert.alert(
-				result.added ? "Saved" : "Removed",
-				result.added
-					? "Added to your wishlist."
-					: "Removed from your wishlist."
-			);
+			if (result.added) {
+				toastSuccess("Saved", "Added to your wishlist.");
+			} else {
+				toastSuccess("Removed", "Removed from your wishlist.");
+			}
 		} catch (error) {
-			Alert.alert("Wishlist", error.message, [
-				{ text: "Cancel", style: "cancel" },
-				{ text: "Log in", onPress: () => navigation.navigate("Login") },
-			]);
+			if (!token) {
+				Alert.alert("Wishlist", error.message, [
+					{ text: "Cancel", style: "cancel" },
+					{ text: "Log in", onPress: () => navigation.navigate("Login") },
+				]);
+			} else {
+				toastError("Wishlist", error.message);
+			}
 		}
 	};
 
@@ -122,12 +123,12 @@ export default function ProductScreen({ route, navigation }) {
 				setComment("");
 				setRating(5);
 				await loadReviews();
-				Alert.alert("Thank you", "Your review has been posted.");
+				toastSuccess("Thank you", "Your review has been posted.");
 			} else {
-				Alert.alert("Could not post review", data.message);
+				toastError("Could not post review", data.message);
 			}
 		} catch (error) {
-			Alert.alert("Could not post review", error.message);
+			toastError("Could not post review", error.message);
 		}
 	};
 

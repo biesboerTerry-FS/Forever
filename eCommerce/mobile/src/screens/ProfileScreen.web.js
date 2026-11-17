@@ -6,6 +6,7 @@ import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { API_URL } from "../api";
+import { toastSuccess } from "../utils/toast";
 import { colors, spacing } from "../theme";
 
 function LinkRow({ icon, label, onPress }) {
@@ -45,6 +46,7 @@ export default function ProfileScreen({ navigation }) {
 				onPress: async () => {
 					await backendSignOut();
 					if (isSignedIn) await signOut();
+					toastSuccess("Logged out", "You have been signed out.");
 					navigation.navigate("Home");
 				},
 			},

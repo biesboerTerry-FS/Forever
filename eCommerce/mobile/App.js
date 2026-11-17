@@ -3,6 +3,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as Notifications from "expo-notifications";
 import { ClerkProvider, tokenCache } from "@clerk/expo";
+import Toast from "react-native-toast-message";
 import { ShopProvider } from "./src/context/ShopContext";
 import RootNavigator from "./src/navigation/RootNavigator";
 import ClerkSync from "./src/components/ClerkSync";
@@ -35,6 +36,7 @@ export default function App() {
 					<StatusBar style="dark" />
 					<ClerkSync />
 					<RootNavigator navigationRef={navigationRef} />
+					<Toast />
 				</ShopProvider>
 			</SafeAreaProvider>
 		</ClerkProvider>

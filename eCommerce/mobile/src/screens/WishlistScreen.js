@@ -11,6 +11,7 @@ import Screen from "../components/Screen";
 import ProductCard from "../components/ProductCard";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
+import { toastSuccess, toastError } from "../utils/toast";
 import { colors, spacing } from "../theme";
 
 export default function WishlistScreen({ navigation }) {
@@ -63,7 +64,14 @@ export default function WishlistScreen({ navigation }) {
 								onPress={() => navigation.navigate("Product", { id: item._id })}
 							/>
 							<Pressable
-								onPress={() => toggleWishlist(item._id)}
+								onPress={async () => {
+									try {
+										await toggleWishlist(item._id);
+										toastSuccess("Removed", `${item.name} removed from wishlist.`);
+									} catch (error) {
+										toastError("Error", error.message);
+									}
+								}}
 								accessibilityRole="button"
 								accessibilityLabel={`Remove ${item.name} from wishlist`}
 								style={{

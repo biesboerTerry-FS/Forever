@@ -10,6 +10,7 @@ const Employees = ({ token, managerOnly = false }) => {
 	const [items, setItems] = useState([]);
 	const [form, setForm] = useState(empty);
 	const [editingId, setEditingId] = useState(null);
+	const [showForm, setShowForm] = useState(false);
 
 	const load = async () => {
 		try {
@@ -30,14 +31,27 @@ const Employees = ({ token, managerOnly = false }) => {
 			if (editingId) payload.id = editingId;
 			if (managerOnly && !/manager/i.test(payload.role)) payload.role = "Store Manager";
 			const res = await axios.post(backendUrl + "/api/hr/employees/upsert", payload, { headers: { token } });
-			if (res.data.success) { toast.success(res.data.message); setForm(empty); setEditingId(null); load(); }
+			if (res.data.success) { toast.success(res.data.message); setForm(empty); setEditingId(null); setShowForm(false); load(); }
 			else toast.error(res.data.message);
 		} catch (err) { toast.error(err.message); }
 	};
 
 	const edit = (emp) => {
 		setEditingId(emp._id);
+		setShowForm(true);
 		setForm({ name: emp.name||"", email: emp.email||"", role: emp.role||"Staff", department: emp.department||"Retail", status: emp.status||"Active", phone: emp.phone||"", hourlyRate: emp.hourlyRate ?? "", notes: emp.notes||"" });
+	};
+
+	const startAdd = () => {
+		setEditingId(null);
+		setForm(empty);
+		setShowForm(true);
+	};
+
+	const cancelForm = () => {
+		setEditingId(null);
+		setForm(empty);
+		setShowForm(false);
 	};
 
 	const remove = async (id) => {
@@ -54,13 +68,14 @@ const Employees = ({ token, managerOnly = false }) => {
 		<div>
 			<div className="flex flex-col gap-2 mb-4 sm:flex-row sm:items-end sm:justify-between">
 				<h3 className="text-lg font-medium text-gray-800 dark:text-gray-100">{managerOnly ? "Managers" : "Employees"}</h3>
-				<div className="flex gap-2">
+				<div className="flex flex-wrap gap-2">
 					<button onClick={() => downloadCsv(`${managerOnly?"managers":"employees"}.csv`, [["Name","Email","Role","Department","Status","Phone","Hourly Rate"], ...exportRows()])} className="px-3 py-2 text-sm border rounded-lg dark:border-gray-700">Export CSV</button>
 					<button onClick={() => downloadPdf(managerOnly?"Managers":"Employees", ["Name","Email","Role","Department","Status","Phone","Rate"], exportRows())} className="px-3 py-2 text-sm border rounded-lg dark:border-gray-700">Export PDF</button>
+					<button onClick={startAdd} className="px-3 py-2 text-sm text-white bg-black rounded-lg dark:bg-white dark:text-gray-900">{managerOnly ? "Add Manager" : "Add Employee"}</button>
 				</div>
 			</div>
 
-			<form onSubmit={save} className="grid gap-3 p-4 mb-4 bg-white rounded-2xl shadow-sm md:grid-cols-3 dark:bg-gray-900 dark:ring-1 dark:ring-gray-800">
+			{showForm && <form onSubmit={save} className="grid gap-3 p-4 mb-4 bg-white rounded-2xl shadow-sm md:grid-cols-3 dark:bg-gray-900 dark:ring-1 dark:ring-gray-800">
 				<input required placeholder="Name" value={form.name} onChange={(e)=>setForm({...form,name:e.target.value})} className="px-3 py-2 text-sm border rounded dark:bg-gray-950 dark:border-gray-700" />
 				<input required type="email" placeholder="Email" value={form.email} onChange={(e)=>setForm({...form,email:e.target.value})} className="px-3 py-2 text-sm border rounded dark:bg-gray-950 dark:border-gray-700" />
 				<input placeholder={managerOnly ? "Manager role (e.g. Store Manager)" : "Role"} value={form.role} onChange={(e)=>setForm({...form,role:e.target.value})} className="px-3 py-2 text-sm border rounded dark:bg-gray-950 dark:border-gray-700" />
@@ -73,9 +88,9 @@ const Employees = ({ token, managerOnly = false }) => {
 				<input placeholder="Notes" value={form.notes} onChange={(e)=>setForm({...form,notes:e.target.value})} className="px-3 py-2 text-sm border rounded md:col-span-2 dark:bg-gray-950 dark:border-gray-700" />
 				<div className="flex gap-2 md:col-span-3">
 					<button className="px-4 py-2 text-sm text-white bg-black rounded dark:bg-white dark:text-gray-900">{editingId ? "Update" : "Add"} {managerOnly ? "Manager" : "Employee"}</button>
-					{editingId && <button type="button" onClick={()=>{setEditingId(null);setForm(empty);}} className="px-4 py-2 text-sm border rounded dark:border-gray-700">Cancel</button>}
+					<button type="button" onClick={cancelForm} className="px-4 py-2 text-sm border rounded dark:border-gray-700">Cancel</button>
 				</div>
-			</form>
+			</form>}
 
 			<div className="overflow-x-auto bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:ring-1 dark:ring-gray-800">
 				<table className="w-full text-sm">

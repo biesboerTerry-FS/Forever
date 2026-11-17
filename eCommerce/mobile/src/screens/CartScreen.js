@@ -11,6 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
+import { toastSuccess, toastError } from "../utils/toast";
 import { colors, money, spacing } from "../theme";
 
 const DELIVERY = 10;
@@ -114,7 +115,14 @@ export default function CartScreen({ navigation }) {
 												{item.name}
 											</Text>
 											<Pressable
-												onPress={() => removeFromCart(item.itemId, item.size)}
+												onPress={async () => {
+													try {
+														await removeFromCart(item.itemId, item.size);
+														toastSuccess("Removed", `${item.name} removed from your bag.`);
+													} catch (error) {
+														toastError("Error", error.message);
+													}
+												}}
 												accessibilityRole="button"
 												accessibilityLabel={`Remove ${item.name}`}
 											>

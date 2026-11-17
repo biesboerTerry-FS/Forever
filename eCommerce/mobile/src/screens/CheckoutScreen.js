@@ -13,6 +13,7 @@ import {
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api, API_URL } from "../api";
+import { toastSuccess, toastError } from "../utils/toast";
 import { colors, money, spacing } from "../theme";
 
 const DELIVERY = 10;
@@ -83,6 +84,7 @@ export default function CheckoutScreen({ navigation }) {
 		);
 		if (!data.success) throw new Error(data.message);
 		clearCart();
+		toastSuccess("Order placed", "Thanks! Your order is confirmed.");
 		Alert.alert(
 			"Order placed",
 			"Thanks! Your order is confirmed and you can track it from My Orders.",
@@ -123,6 +125,7 @@ export default function CheckoutScreen({ navigation }) {
 			if (method === "stripe") await placeStripeOrder();
 			else await placeCodOrder();
 		} catch (error) {
+			toastError("Could not place order", error.message);
 			Alert.alert("Could not place order", error.message);
 		} finally {
 			setPlacing(false);

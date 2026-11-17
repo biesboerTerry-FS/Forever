@@ -45,6 +45,7 @@ const Orders = ({ token }) => {
 				{ headers: { token } }
 			);
 			if (response.data.success) {
+				toast.success(response.data.message || "Order status updated.");
 				await fetchAllOrders();
 			} else {
 				toast.error(response.data.message);
