@@ -3,9 +3,10 @@ import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
+import ProductSkeleton from "../components/ProductSkeleton";
 
 const Collection = () => {
-	const { products, search, setSearch } = useContext(ShopContext);
+	const { products, productsLoading, search, setSearch } = useContext(ShopContext);
 	const [showFilter, setShowFilter] = useState(false);
 	const [filterProducts, setFilterProducts] = useState([]);
 	const [category, setCategory] = useState([]);
@@ -210,7 +211,9 @@ const Collection = () => {
 				</div>
 
 				{/* Map Products */}
-				{filterProducts.length === 0 ? (
+				{productsLoading ? (
+					<ProductSkeleton count={8} />
+				) : filterProducts.length === 0 ? (
 					<div className="px-6 py-16 text-center border border-dashed border-gray-300 dark:border-gray-700 text-gray-500 dark:text-gray-400">
 						<p className="text-lg font-medium text-gray-800 dark:text-gray-100">No products found</p>
 						<p className="max-w-md mx-auto mt-2 text-sm">
@@ -237,6 +240,8 @@ const Collection = () => {
 									id={item._id}
 									price={item.price}
 									image={item.image}
+									category={item.category}
+									bestseller={item.bestseller}
 								/>
 							))}
 						</div>

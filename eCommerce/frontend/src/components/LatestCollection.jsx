@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import ProductSkeleton from "./ProductSkeleton";
 
 const LatestCollection = () => {
-	const { products } = useContext(ShopContext);
+	const { products, productsLoading } = useContext(ShopContext);
 	const [latestProducts, setLatestProducts] = useState([]);
 
 	useEffect(() => {
@@ -21,19 +22,23 @@ const LatestCollection = () => {
 				</p>
 			</div>
 			{/* Rendering products */}
-			<div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-x-6">
-				{latestProducts.map((item, index) => (
-					<ProductItem
-						key={item._id || index}
-						id={item._id}
-						image={item.image}
-						name={item.name}
-						price={item.price}
-						category={item.category}
-						bestseller={item.bestseller}
-					/>
-				))}
-			</div>
+			{productsLoading ? (
+				<ProductSkeleton count={10} />
+			) : (
+				<div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-x-6">
+					{latestProducts.map((item, index) => (
+						<ProductItem
+							key={item._id || index}
+							id={item._id}
+							image={item.image}
+							name={item.name}
+							price={item.price}
+							category={item.category}
+							bestseller={item.bestseller}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 };

@@ -2,9 +2,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import Title from "./Title";
 import ProductItem from "./ProductItem";
+import ProductSkeleton from "./ProductSkeleton";
 
 const RelatedProducts = ({ category, subCategory }) => {
-	const { products } = useContext(ShopContext);
+	const { products, productsLoading } = useContext(ShopContext);
 	const [related, setRelated] = useState([]);
 
 	useEffect(() => {
@@ -27,19 +28,23 @@ const RelatedProducts = ({ category, subCategory }) => {
 				<Title text1={"RELATED"} text2={"PRODUCTS"} />
 			</div>
 
-			<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-6">
-				{related.map((item, index) => (
-					<ProductItem
-						key={index}
-						id={item._id}
-						name={item.name}
-						price={item.price}
-						image={item.image}
-						category={item.category}
-						bestseller={item.bestseller}
-					/>
-				))}
-			</div>
+			{productsLoading ? (
+				<ProductSkeleton count={5} />
+			) : (
+				<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-y-6">
+					{related.map((item, index) => (
+						<ProductItem
+							key={index}
+							id={item._id}
+							name={item.name}
+							price={item.price}
+							image={item.image}
+							category={item.category}
+							bestseller={item.bestseller}
+						/>
+					))}
+				</div>
+			)}
 		</div>
 	);
 };
