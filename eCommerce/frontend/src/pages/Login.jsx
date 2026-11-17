@@ -3,6 +3,8 @@ import { Link, useSearchParams } from "react-router-dom";
 import { SignIn, useAuth } from "@clerk/react";
 import { ShopContext } from "../context/ShopContext";
 
+const isDev = import.meta.env.DEV;
+
 const Login = () => {
 	const { token, navigate } = useContext(ShopContext);
 	const { isSignedIn } = useAuth();
@@ -37,6 +39,19 @@ const Login = () => {
 					}}
 				/>
 			</div>
+			{isDev && (
+				<div className="w-full pt-2">
+					<Link
+						to={`/demo-login?redirect=${encodeURIComponent(redirectTo)}`}
+						className="block w-full px-5 py-3 text-sm font-medium text-center text-gray-900 transition-colors bg-white border border-gray-300 rounded-full hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+					>
+						Try demo account
+					</Link>
+					<p className="mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
+						Development-only login. No real account required.
+					</p>
+				</div>
+			)}
 			<Link
 				to="/forgot-password"
 				className="text-sm underline cursor-pointer hover:text-black dark:hover:text-white"

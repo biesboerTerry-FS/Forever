@@ -51,6 +51,7 @@ const NavBar = () => {
 		// Clear local backend session immediately for responsive UI, then sign out of Clerk.
 		localStorage.removeItem("token");
 		localStorage.removeItem("user");
+		localStorage.removeItem("demo-login");
 		setToken("");
 		setUser(null);
 		setCartItems({});

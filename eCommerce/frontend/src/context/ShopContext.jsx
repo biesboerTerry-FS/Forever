@@ -45,16 +45,30 @@ const ShopContextProvider = (props) => {
 	const { user: clerkUser, isLoaded: clerkLoaded } = useUser();
 	const syncingRef = useRef(false);
 
+	const isDemoLogin = () => {
+		try {
+			return localStorage.getItem("demo-login") === "1";
+		} catch {
+			return false;
+		}
+	};
+
 	// Sync Clerk session with the backend JWT used by cart/wishlist/orders.
 	useEffect(() => {
 		const sync = async () => {
 			if (syncingRef.current) return;
 			if (!clerkLoaded) return;
 
+			// Demo logins bypass Clerk entirely; don't wipe them when Clerk is unsigned.
+			if (!isSignedIn && isDemoLogin()) {
+				return;
+			}
+
 			if (!isSignedIn) {
 				if (token) {
 					localStorage.removeItem("token");
 					localStorage.removeItem("user");
+					localStorage.removeItem("demo-login");
 					setToken("");
 					setUser(null);
 					setCartItems({});

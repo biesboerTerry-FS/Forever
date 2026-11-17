@@ -8,6 +8,7 @@ import Contact from "./pages/Contact";
 import Product from "./pages/Product";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import DemoLogin from "./pages/DemoLogin";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
 import NavBar from "./components/NavBar";
@@ -86,6 +87,7 @@ const App = () => {
 						<Route path="/product/:productId" element={<Product />} />
 						<Route path="/cart" element={<Cart />} />
 						<Route path="/login" element={<Login />} />
+						<Route path="/demo-login" element={<DemoLogin />} />
 						<Route path="/forgot-password" element={<ForgotPassword />} />
 						<Route path="/reset-password" element={<ResetPassword />} />
 						<Route path="/place-order" element={<PlaceOrder />} />
