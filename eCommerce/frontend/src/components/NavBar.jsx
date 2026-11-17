@@ -62,7 +62,8 @@ const NavBar = () => {
 	};
 
 	return (
-		<div className="flex items-center justify-between py-5 font-medium">
+		<header className="sticky top-0 z-50 py-4 font-medium glass">
+		<div className="flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<Link to="/">
 				<img
 					src={assets.logo}
@@ -71,41 +72,64 @@ const NavBar = () => {
 				/>
 			</Link>
 
-			<ul className="hidden gap-5 text-sm text-gray-700 dark:text-gray-200 sm:flex">
+			<ul className="hidden gap-1 text-sm font-medium text-gray-700 dark:text-gray-200 sm:flex">
 				<li>
 					<NavLink
 						onClick={() => setVisible(false)}
 						to="/"
-						className="flex flex-col items-center gap-1"
+						className={({ isActive }) =>
+							`px-4 py-2 rounded-full transition-colors ${
+								isActive
+									? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+									: "hover:bg-gray-100 dark:hover:bg-gray-800"
+							}`
+						}
 					>
-						<p>HOME</p>
-						<hr className="w-2/4 border-none h-[1.5px] bg-gray-700 dark:bg-gray-300 hidden" />
+						HOME
 					</NavLink>
 				</li>
 				<li>
 					<NavLink
 						onClick={() => setVisible(false)}
 						to="/collection"
-						className="flex flex-col items-center gap-1"
+						className={({ isActive }) =>
+							`px-4 py-2 rounded-full transition-colors ${
+								isActive
+									? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+									: "hover:bg-gray-100 dark:hover:bg-gray-800"
+							}`
+						}
 					>
-						<p>COLLECTION</p>
-						<hr className="w-2/4 border-none h-[1.5px] bg-gray-700 dark:bg-gray-300 hidden" />
+						COLLECTION
 					</NavLink>
 				</li>
 				<li>
 					<NavLink
 						onClick={() => setVisible(false)}
 						to="/about"
-						className="flex flex-col items-center gap-1"
+						className={({ isActive }) =>
+							`px-4 py-2 rounded-full transition-colors ${
+								isActive
+									? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+									: "hover:bg-gray-100 dark:hover:bg-gray-800"
+							}`
+						}
 					>
-						<p>ABOUT</p>
-						<hr className="w-2/4 border-none h-[1.5px] bg-gray-700 dark:bg-gray-300 hidden" />
+						ABOUT
 					</NavLink>
 				</li>
 				<li>
-					<NavLink to="/contact" className="flex flex-col items-center gap-1">
-						<p>CONTACT</p>
-						<hr className="w-2/4 border-none h-[1.5px] bg-gray-700 dark:bg-gray-300 hidden" />
+					<NavLink
+						to="/contact"
+						className={({ isActive }) =>
+							`px-4 py-2 rounded-full transition-colors ${
+								isActive
+									? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+									: "hover:bg-gray-100 dark:hover:bg-gray-800"
+							}`
+						}
+					>
+						CONTACT
 					</NavLink>
 				</li>
 			</ul>
@@ -295,6 +319,7 @@ const NavBar = () => {
 				</div>
 			</div>
 		</div>
+	</header>
 	);
 };
 

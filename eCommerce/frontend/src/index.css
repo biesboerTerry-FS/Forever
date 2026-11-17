@@ -9,7 +9,15 @@ a.active hr {
 }
 
 * {
-	font-family: Outfit;
+	font-family: "Outfit", sans-serif;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+::selection {
+	background-color: rgba(255, 146, 7, 0.25);
 }
 
 .prata-regular {
@@ -19,7 +27,35 @@ a.active hr {
 }
 
 ::-webkit-scrollbar {
-	display: none;
+	width: 8px;
+	height: 8px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #d1d5db;
+	border-radius: 999px;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+	background: #4b5563;
+}
+
+@layer utilities {
+	.glass {
+		@apply bg-white/80 backdrop-blur-md border-b border-gray-200/60;
+	}
+
+	html.dark .glass {
+		@apply bg-gray-900/80 border-gray-800/60;
+	}
+
+	.text-balance {
+		text-wrap: balance;
+	}
 }
 
 /* shows active page when hamburger menu is active */

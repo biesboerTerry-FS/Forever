@@ -1,5 +1,6 @@
 import React from "react";
 import Hero from "../components/Hero";
+import PromoBanner from "../components/PromoBanner";
 import LatestCollection from "../components/LatestCollection";
 import BestSeller from "../components/BestSeller";
 import OurPolicy from "../components/OurPolicy";
@@ -7,8 +8,9 @@ import NewsletterBox from "../components/NewsletterBox";
 
 const Home = () => {
 	return (
-		<div>
+		<div className="space-y-10 sm:space-y-14">
 			<Hero />
+			<PromoBanner />
 			<LatestCollection />
 			<BestSeller />
 			<OurPolicy />
