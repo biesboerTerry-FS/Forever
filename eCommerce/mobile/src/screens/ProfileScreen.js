@@ -1,6 +1,7 @@
 import React from "react";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "@clerk/expo";
 import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
@@ -29,7 +30,8 @@ function LinkRow({ icon, label, onPress }) {
 }
 
 export default function ProfileScreen({ navigation }) {
-	const { user, token, wishlist, signOut } = useShop();
+	const { user, token, wishlist, signOut: backendSignOut } = useShop();
+	const { isSignedIn, signOut } = useAuth();
 
 	const confirmLogout = () => {
 		Alert.alert("Log out", "Are you sure you want to log out?", [
@@ -38,7 +40,8 @@ export default function ProfileScreen({ navigation }) {
 				text: "Log out",
 				style: "destructive",
 				onPress: async () => {
-					await signOut();
+					await backendSignOut();
+					if (isSignedIn) await signOut();
 					navigation.navigate("Home");
 				},
 			},
@@ -48,9 +51,30 @@ export default function ProfileScreen({ navigation }) {
 	return (
 		<Screen>
 			<ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: 40 }}>
-				<Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 16 }}>
-					My account
-				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "space-between",
+						marginBottom: 16,
+					}}
+				>
+					<Text style={{ fontSize: 20, fontWeight: "600" }}>My account</Text>
+					{token ? (
+						<Pressable
+							onPress={confirmLogout}
+							accessibilityRole="button"
+							accessibilityLabel="Log out"
+							hitSlop={8}
+							style={({ pressed }) => ({
+								padding: 6,
+								opacity: pressed ? 0.6 : 1,
+							})}
+						>
+							<Ionicons name="log-out-outline" size={24} color={colors.ink} />
+						</Pressable>
+					) : null}
+				</View>
 
 				{token && user ? (
 					<View

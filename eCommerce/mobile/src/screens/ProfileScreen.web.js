@@ -54,9 +54,30 @@ export default function ProfileScreen({ navigation }) {
 	return (
 		<Screen>
 			<ScrollView contentContainerStyle={{ padding: spacing.md, paddingBottom: 40 }}>
-				<Text style={{ fontSize: 20, fontWeight: "600", marginBottom: 16 }}>
-					My account
-				</Text>
+				<View
+					style={{
+						flexDirection: "row",
+						alignItems: "center",
+						justifyContent: "space-between",
+						marginBottom: 16,
+					}}
+				>
+					<Text style={{ fontSize: 20, fontWeight: "600" }}>My account</Text>
+					{showSignedIn ? (
+						<Pressable
+							onPress={confirmLogout}
+							accessibilityRole="button"
+							accessibilityLabel="Log out"
+							hitSlop={8}
+							style={({ pressed }) => ({
+								padding: 6,
+								opacity: pressed ? 0.6 : 1,
+							})}
+						>
+							<Ionicons name="log-out-outline" size={24} color={colors.ink} />
+						</Pressable>
+					) : null}
+				</View>
 
 				{showSignedIn ? (
 					<View
