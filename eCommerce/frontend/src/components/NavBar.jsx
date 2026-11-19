@@ -272,11 +272,13 @@ const NavBar = () => {
 			{/* Sidebar menu for small screens */}
 			<div
 				aria-hidden={!visible}
-				className={`absolute top-0 right-0 bottom-0 z-50 overflow-hidden bg-white dark:bg-gray-900 transition-all ${
-					visible ? "w-full" : "w-0 invisible"
+				className={`fixed inset-0 z-[100] overflow-y-auto bg-white dark:bg-gray-900 transition-opacity duration-200 ${
+					visible
+						? "opacity-100"
+						: "invisible opacity-0 pointer-events-none"
 				}`}
 			>
-				<div className="flex flex-col text-gray-600 dark:text-gray-300">
+				<div className="flex min-h-full flex-col text-gray-600 dark:text-gray-300 pt-6">
 					<button
 						type="button"
 						onClick={() => setVisible(false)}
