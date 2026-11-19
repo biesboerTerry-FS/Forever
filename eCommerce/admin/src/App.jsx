@@ -54,12 +54,14 @@ const App = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-200 transition-colors">
-			<a
-				href="#admin-main"
-				className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-gray-900 focus:text-white dark:focus:bg-white dark:focus:text-gray-900"
-			>
-				Skip to content
-			</a>
+			{token !== "" && (
+				<a
+					href="#admin-main"
+					className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-gray-900 focus:text-white dark:focus:bg-white dark:focus:text-gray-900"
+				>
+					Skip to content
+				</a>
+			)}
 			<ToastContainer
 				position="top-right"
 				autoClose={3000}
