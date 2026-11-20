@@ -170,6 +170,30 @@ const adminLogin = async (request, response) => {
 	}
 };
 
+//& Demo admin sign-in (portfolio/demo deployments)
+// Mints the same role-scoped admin JWT as adminLogin without requiring the
+// private ADMIN_EMAIL / ADMIN_PASSWORD. This lets the deployed admin panel
+// render its dashboard with live data instead of a 401 / empty screen.
+// Disable for real deployments with ALLOW_ADMIN_DEMO=false.
+const adminDemoLogin = async (request, response) => {
+	try {
+		if (process.env.ALLOW_ADMIN_DEMO === "false") {
+			return response.status(403).json({
+				success: false,
+				message: "Demo admin sign-in is disabled",
+			});
+		}
+
+		const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
+			expiresIn: "12h",
+		});
+		return response.json({ success: true, demo: true, token });
+	} catch (error) {
+		console.log(error);
+		return response.json({ success: false, message: error.message });
+	}
+};
+
 //& Social sign-in helpers
 // Finds or creates a user for a verified social identity and returns our JWT.
 const signInSocialUser = async ({ email, name, picture, provider }) => {
@@ -483,6 +507,7 @@ export {
 	loginUser,
 	resgisterUser,
 	adminLogin,
+	adminDemoLogin,
 	googleLogin,
 	clerkLogin,
 	demoOAuthLogin,

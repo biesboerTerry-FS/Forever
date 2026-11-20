@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import { Routes, Route } from "react-router-dom";
@@ -40,7 +41,46 @@ const App = () => {
 	const [token, setToken] = useState(
 		localStorage.getItem("token") ? localStorage.getItem("token") : ""
 	);
+	const [authChecking, setAuthChecking] = useState(true);
 	const [dark, setDark] = useState(getInitialTheme);
+
+	// Portfolio/demo deployments have no public admin credentials. Obtain a
+	// scoped admin JWT on load so the dashboard renders with live data instead
+	// of an empty login screen or a 401 from a stale token.
+	useEffect(() => {
+		let active = true;
+		const signIn = async () => {
+			try {
+				const response = await axios.post(backendUrl + "/api/admin/demo");
+				if (active && response.data?.success && response.data.token) {
+					setToken(response.data.token);
+				} else if (active) {
+					setToken("");
+				}
+			} catch (error) {
+				console.warn("Admin demo sign-in unavailable:", error?.message || error);
+				if (active) setToken("");
+			} finally {
+				if (active) setAuthChecking(false);
+			}
+		};
+		signIn();
+		return () => {
+			active = false;
+		};
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+	// If a token expires mid-session, drop back to the login screen.
+	useEffect(() => {
+		const interceptor = axios.interceptors.response.use(
+			(response) => response,
+			(error) => {
+				if (error?.response?.status === 401) setToken("");
+				return Promise.reject(error);
+			}
+		);
+		return () => axios.interceptors.response.eject(interceptor);
+	}, []);
 
 	useEffect(() => {
 		document.documentElement.classList.toggle("dark", dark);
@@ -51,6 +91,17 @@ const App = () => {
 	useEffect(() => {
 		localStorage.setItem("token", token);
 	}, [token]);
+
+	if (authChecking) {
+		return (
+			<div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-300">
+				<div className="flex flex-col items-center gap-3">
+					<div className="h-9 w-9 animate-spin rounded-full border-2 border-gray-300 border-t-gray-800 dark:border-gray-700 dark:border-t-gray-200" />
+					<p className="text-sm font-medium">Loading admin panel…</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-200 transition-colors">
