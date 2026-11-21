@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { fetchOrganization, loadHrOrganization, saveOrganization } from "../../utils/hr";
 
@@ -36,13 +36,18 @@ const HrOrganization = ({ token }) => {
 	const [roleInput, setRoleInput] = useState("");
 	const [busy, setBusy] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const dirty = useRef(false);
 
 	useEffect(() => {
 		let active = true;
 		fetchOrganization(token).then((result) => {
 			if (!active) return;
-			setDepartments(result.departments || []);
-			setRoles(result.roles || []);
+			// A quick admin may have edited the locally-seeded labels while the
+			// API was loading — never clobber those edits on arrival.
+			if (!dirty.current) {
+				setDepartments(result.departments || []);
+				setRoles(result.roles || []);
+			}
 			setLoading(false);
 		});
 		return () => { active = false; };
@@ -51,8 +56,14 @@ const HrOrganization = ({ token }) => {
 	const add = (setter) => (value, clear) => {
 		const label = value.trim().slice(0, 60);
 		if (!label) return;
+		dirty.current = true;
 		setter((items) => items.includes(label) ? items : [...items, label]);
 		clear("");
+	};
+
+	const remove = (setter) => (item) => {
+		dirty.current = true;
+		setter((items) => items.filter((value) => value !== item));
 	};
 
 	const save = async () => {
@@ -96,7 +107,7 @@ const HrOrganization = ({ token }) => {
 					value={departmentInput}
 					onValue={setDepartmentInput}
 					onAdd={() => add(setDepartments)(departmentInput, setDepartmentInput)}
-					onRemove={(item) => setDepartments((items) => items.filter((value) => value !== item))}
+					onRemove={remove(setDepartments)}
 				/>
 				<LabelList
 					title="Role labels"
@@ -106,7 +117,7 @@ const HrOrganization = ({ token }) => {
 					value={roleInput}
 					onValue={setRoleInput}
 					onAdd={() => add(setRoles)(roleInput, setRoleInput)}
-					onRemove={(item) => setRoles((items) => items.filter((value) => value !== item))}
+					onRemove={remove(setRoles)}
 				/>
 			</div>
 		</div>

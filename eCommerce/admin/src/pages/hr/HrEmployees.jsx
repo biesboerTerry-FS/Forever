@@ -38,7 +38,7 @@ const HrEmployees = ({ token }) => {
 		setOrganization(org);
 	};
 
-	useEffect(() => { load(); }, [token]); // eslint-disable-line react-hooks/exhaustive-deps
+	useEffect(() => { load(); }, [token]);
 
 	useEffect(() => {
 		if (!editParam || !employees.length) return;
