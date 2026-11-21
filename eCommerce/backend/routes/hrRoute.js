@@ -2,6 +2,10 @@ import express from "express";
 import adminAuth from "../middleware/adminAuth.js";
 import { validateHrUpsert, validateHrRemove } from "../middleware/validate.js";
 import {
+	listAllRequests,
+	updateRequestStatus,
+} from "../controllers/workRequestController.js";
+import {
 	listEmployees,
 	upsertEmployee,
 	removeEmployee,
@@ -50,5 +54,9 @@ hrRouter.post(
 hrRouter.post("/payroll/remove", validateHrRemove, removePayroll);
 
 hrRouter.get("/reports", getReports);
+
+// Schedule requests submitted by employees (admin review).
+hrRouter.get("/requests", listAllRequests);
+hrRouter.patch("/requests/:id", validateHrUpsert("status"), updateRequestStatus);
 
 export default hrRouter;

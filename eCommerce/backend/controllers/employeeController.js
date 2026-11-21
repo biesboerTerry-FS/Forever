@@ -34,6 +34,7 @@ const publicProfile = (employee) => ({
 	email: employee.email,
 	phone: employee.phone || "",
 	address: employee.address || "",
+	available: employee.available !== false,
 });
 
 const signEmployeeToken = (employee) =>
@@ -136,6 +137,9 @@ export const patchMe = async (request, response) => {
 			if (typeof request.body?.[field] === "string") {
 				patch[field] = request.body[field].trim().slice(0, 200);
 			}
+		}
+		if (typeof request.body?.available === "boolean") {
+			patch.available = request.body.available;
 		}
 
 		if ("name" in patch && !patch.name) {

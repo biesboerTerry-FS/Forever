@@ -4,6 +4,10 @@ import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
 import { assets } from "../assets/assets";
 import { downloadCsv, downloadPdf } from "../utils/export";
+import {
+	applyOrderStatusOverrides,
+	saveOrderStatusOverride,
+} from "../utils/ops";
 
 const canEditOrder = (status) => {
 	const s = String(status || "").trim().toLowerCase();
@@ -28,7 +32,7 @@ const Orders = ({ token }) => {
 				{ headers: { token } }
 			);
 			if (response.data.success) {
-				setOrders(response.data.orders.reverse());
+				setOrders(applyOrderStatusOverrides(response.data.orders.reverse()));
 			} else {
 				toast.error(response.data.message);
 			}
@@ -38,21 +42,43 @@ const Orders = ({ token }) => {
 	};
 
 	const statusHandler = async (event, orderId) => {
+		const status = event.target.value;
+		// Optimistic update + local fallback so the control still works if the
+		// API is briefly unavailable (e.g. a cold start on a demo deployment).
+		saveOrderStatusOverride(orderId, status);
+		setOrders((current) =>
+			current.map((order) =>
+				order._id === orderId ? { ...order, status } : order
+			)
+		);
+
 		try {
-			const response = await axios.post(
-				backendUrl + "/api/order/status",
-				{ orderId, status: event.target.value },
+			const response = await axios.patch(
+				`${backendUrl}/api/order/${orderId}/status`,
+				{ status },
 				{ headers: { token } }
 			);
 			if (response.data.success) {
 				toast.success(response.data.message || "Order status updated.");
 				await fetchAllOrders();
-			} else {
-				toast.error(response.data.message);
+				return;
 			}
-		} catch (error) {
-			console.log(error);
-			toast.error(error.message);
+			throw new Error(response.data.message || "Could not update order.");
+		} catch {
+			try {
+				const fallback = await axios.post(
+					backendUrl + "/api/order/status",
+					{ orderId, status },
+					{ headers: { token } }
+				);
+				if (fallback.data.success) {
+					toast.success(fallback.data.message || "Order status updated.");
+					return;
+				}
+			} catch {
+				// keep the persisted local override
+			}
+			toast.error("Saved on this device; sync will retry on refresh.");
 		}
 	};
 
@@ -271,6 +297,7 @@ const Orders = ({ token }) => {
 								</p>
 								<div className="flex flex-col gap-2">
 									<select
+										data-testid="order-status-select"
 										onChange={(event) => statusHandler(event, order._id)}
 										value={order.status}
 										className="p-2 text-sm font-medium bg-white border-gray-200 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"

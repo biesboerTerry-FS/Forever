@@ -18,6 +18,26 @@ const getStats = async (request, response) => {
 		const paidOrders = orders.filter((o) => o.payment).length;
 		const pendingPayment = orders.filter((o) => !o.payment).length;
 
+		// Open fulfilment queue shared with the employee portal widget.
+		const isPendingStatus = (status) =>
+			["order placed", "ordered", "pending", "packing", "preparing"].includes(
+				String(status || "").trim().toLowerCase()
+			);
+		const pendingOrders = orders
+			.filter((order) => isPendingStatus(order.status))
+			.sort((a, b) => b.date - a.date)
+			.slice(0, 5)
+			.map((order) => ({
+				_id: order._id,
+				amount: order.amount,
+				status: order.status,
+				date: order.date,
+				customer:
+					`${order.address?.firstName || ""} ${order.address?.lastName || ""}`.trim() ||
+					"Guest",
+				items: (order.items || []).length,
+			}));
+
 		const statusOrder = [
 			"Order Placed",
 			"Packing",
@@ -98,6 +118,7 @@ const getStats = async (request, response) => {
 				ordersByStatus,
 				topProducts,
 				recentOrders,
+				pendingOrders,
 				last7Days,
 			},
 		});

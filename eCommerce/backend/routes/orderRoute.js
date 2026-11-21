@@ -11,10 +11,13 @@ import {
 	verifyRazorpay,
 	stripeWebhook,
 	razorpayWebhook,
+	updateOrderStatus,
 } from "../controllers/orderController.js";
 import adminAuth from "../middleware/adminAuth.js";
 import authUser from "../middleware/auth.js";
+import staffAuth from "../middleware/staffAuth.js";
 import {
+	fields,
 	validateOrder,
 	validateStripeVerification,
 	validateRazorpayVerification,
@@ -54,5 +57,12 @@ orderRouter.post(
 // Payment provider webhooks (no auth token; signatures are verified instead)
 orderRouter.post("/webhook/stripe", stripeWebhook);
 orderRouter.post("/webhook/razorpay", razorpayWebhook);
+
+// Shared staff endpoints (admin or employee). Used by both portals.
+const validateStatusPatch = fields({
+	status: { required: true, max: 40, message: "A status is required." },
+});
+orderRouter.post("/staff", staffAuth, allOrders);
+orderRouter.patch("/:id/status", staffAuth, validateStatusPatch, updateOrderStatus);
 
 export default orderRouter;

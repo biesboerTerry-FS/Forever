@@ -112,6 +112,32 @@ const Dashboard = ({ token }) => {
 				/>
 			</div>
 
+			{/* Pending fulfilment queue */}
+			<div data-testid="pending-orders-widget" className="p-5 mt-4 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">
+				<div className="flex items-center justify-between">
+					<p className="text-sm font-medium text-gray-800 dark:text-gray-100">Pending orders</p>
+					<a href="/orders" className="text-xs font-medium text-pink-600 hover:underline dark:text-pink-400">View all orders →</a>
+				</div>
+				{(stats.pendingOrders || []).length === 0 ? (
+					<p className="mt-3 text-xs text-gray-400 dark:text-gray-500">No orders waiting for fulfilment.</p>
+				) : (
+					<div className="grid gap-2 mt-3 sm:grid-cols-2 xl:grid-cols-3">
+						{stats.pendingOrders.map((order) => (
+							<div key={order._id} className="flex items-center justify-between gap-3 px-3 py-2 text-xs rounded-lg bg-gray-50 dark:bg-gray-800/60">
+								<div className="min-w-0">
+									<p className="font-medium text-gray-800 dark:text-gray-100 truncate">{order.customer}</p>
+									<p className="text-gray-500 dark:text-gray-400">{order.items} items · {new Date(order.date).toLocaleDateString()}</p>
+								</div>
+								<div className="text-right">
+									<p className="font-medium text-gray-800 dark:text-gray-100">{currency}{order.amount}</p>
+									<p className="text-gray-500 dark:text-gray-400">{order.status}</p>
+								</div>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+
 			<div className="grid gap-4 mt-4 lg:grid-cols-2">
 				{/* Revenue last 7 days */}
 				<div className="p-5 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">

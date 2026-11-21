@@ -610,6 +610,59 @@ const updateOrder = async (request, response) => {
 	}
 };
 
+// Fulfilment flow shared by the admin and employee portals. The stored values
+// stay in the vocabulary the existing admin UI already understands.
+const FULFILMENT_STAGES = ["Order Placed", "Packing", "Shipped", "Delivered"];
+
+export const normalizeFulfilmentStatus = (value) => {
+	const status = String(value || "").trim().toLowerCase();
+	if (["pending", "order placed", "ordered"].includes(status)) return "Order Placed";
+	if (["preparing", "packing"].includes(status)) return "Packing";
+	if (["shipped", "out for delivery", "in transit"].includes(status)) return "Shipped";
+	if (["delivered"].includes(status)) return "Delivered";
+	return null;
+};
+
+// PATCH /api/order/:id/status — admin or employee (orderAuth) only.
+const updateOrderStatus = async (request, response) => {
+	try {
+		const status = normalizeFulfilmentStatus(request.body?.status);
+		if (!status) {
+			return response.status(400).json({
+				success: false,
+				message: "Choose one of: Pending, Preparing, Shipped, Delivered.",
+			});
+		}
+
+		const order = await orderModel.findById(request.params.id);
+		if (!order) {
+			return response.status(404).json({ success: false, message: "Order not found." });
+		}
+
+		const currentStage = FULFILMENT_STAGES.indexOf(
+			normalizeFulfilmentStatus(order.status) || order.status
+		);
+		const nextStage = FULFILMENT_STAGES.indexOf(status);
+		if (nextStage < currentStage) {
+			return response.status(400).json({
+				success: false,
+				message: "An order cannot move backwards in the fulfilment flow.",
+			});
+		}
+
+		order.status = status;
+		await order.save();
+		return response.json({
+			success: true,
+			message: `Order marked ${status}.`,
+			order: { _id: order._id, status: order.status },
+		});
+	} catch (error) {
+		console.error("updateOrderStatus:", error.message);
+		return response.json({ success: false, message: "Could not update order status." });
+	}
+};
+
 export {
 	placeOrder,
 	placeOrderStripe,
@@ -618,6 +671,7 @@ export {
 	userOrders,
 	updateStatus,
 	updateOrder,
+	updateOrderStatus,
 	verifyStripe,
 	verifyRazorpay,
 	stripeWebhook,

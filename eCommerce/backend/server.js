@@ -15,6 +15,7 @@ import adminRouter from "./routes/adminRoute.js";
 import newsletterRouter from "./routes/newsletterRoute.js";
 import hrRouter from "./routes/hrRoute.js";
 import employeeRouter from "./routes/employeeRoute.js";
+import messageRouter from "./routes/messageRoute.js";
 import { warnIfWeakJwtSecret } from "./middleware/jwt.js";
 
 // Fail loudly (without ever substituting a fallback key) if the deployment
@@ -128,6 +129,7 @@ app.use("/api/wishlist", wishlistRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/hr", hrRouter);
 app.use("/api/employee", employeeRouter);
+app.use("/api/messages", messageRouter);
 
 // Connect once per cold start as an optimization; request middleware above is the
 // source of truth for readiness.
