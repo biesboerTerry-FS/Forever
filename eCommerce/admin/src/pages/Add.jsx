@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { assets } from "../assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
@@ -9,6 +9,8 @@ import { toast } from "react-toastify";
 // and product pages load less image data.
 const MAX_UPLOAD_BYTES = 800 * 1024;
 const MAX_DIMENSION = 1200;
+// The API accepts image1..image5. A single picker fills those slots in order.
+const MAX_IMAGES = 5;
 
 const compressImage = (file) =>
 	new Promise((resolve) => {
@@ -55,13 +57,46 @@ const compressImage = (file) =>
 		image.src = objectUrl;
 	});
 
+// A thumbnail owns its object URL so previews are released when a file is
+// removed (or the form unmounts), instead of leaking on every render.
+const ImageThumbnail = ({ file, label, onRemove }) => {
+	const preview = useMemo(() => URL.createObjectURL(file), [file]);
+
+	useEffect(() => () => URL.revokeObjectURL(preview), [preview]);
+
+	return (
+		<div className="relative w-20 h-20">
+			<img
+				className="object-cover w-20 h-20 rounded-lg"
+				src={preview}
+				alt={label}
+			/>
+			<button
+				type="button"
+				onClick={onRemove}
+				aria-label={`Remove ${label}`}
+				title="Remove image"
+				className="absolute -top-2 -right-2 flex items-center justify-center w-6 h-6 text-sm font-medium leading-none text-white bg-gray-900 rounded-full shadow-sm transition-colors hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600"
+			>
+				<span aria-hidden="true">×</span>
+			</button>
+		</div>
+	);
+};
+
+let thumbnailId = 0;
+const nextThumbnailId = () => `thumb-${++thumbnailId}`;
+
 const Add = ({ token }) => {
-	// State variables to store images
-	const [image1, setImage1] = useState(false);
-	const [image2, setImage2] = useState(false);
-	const [image3, setImage3] = useState(false);
-	const [image4, setImage4] = useState(false);
-	const [image5, setImage5] = useState(false);
+	// Attached files fill the API's image1..image5 slots in display order.
+	const [images, setImages] = useState([]);
+	const imagesRef = useRef([]);
+
+	const updateImages = (updater) => {
+		const next = updater(imagesRef.current);
+		imagesRef.current = next;
+		setImages(next);
+	};
 
 	// State variables for product info
 	const [name, setName] = useState("");
@@ -72,23 +107,50 @@ const Add = ({ token }) => {
 	const [bestseller, setBestseller] = useState(false);
 	const [sizes, setSizes] = useState([]);
 
-	const handleImageChange = async (event, setter) => {
-		const file = event.target.files?.[0];
-		if (!file) return;
+	const handleImageChange = async (event) => {
+		const selected = Array.from(event.target.files || []);
+		// Reset immediately so the single picker stays plain and can attach
+		// more files (even the same filename) while compression is running.
+		event.target.value = "";
+		if (!selected.length) return;
 
-		if (!file.type.startsWith("image/")) {
-			toast.error("Please choose an image file.");
-			event.target.value = "";
+		const imageFiles = selected.filter((file) =>
+			file.type.startsWith("image/")
+		);
+		if (imageFiles.length !== selected.length) {
+			toast.error("Please choose image files only.");
+		}
+		if (!imageFiles.length) return;
+
+		const prepared = await Promise.all(imageFiles.map(compressImage));
+		const accepted = prepared.filter((file) => {
+			if (file.size <= MAX_UPLOAD_BYTES) return true;
+			toast.error(
+				"That image is still too large after compression. Try a smaller one."
+			);
+			return false;
+		});
+		if (!accepted.length) return;
+
+		const remaining = MAX_IMAGES - imagesRef.current.length;
+		if (remaining <= 0) {
+			toast.error(`You can attach up to ${MAX_IMAGES} images.`);
 			return;
 		}
-
-		const prepared = await compressImage(file);
-		if (prepared.size > MAX_UPLOAD_BYTES) {
-			toast.error("That image is still too large after compression. Try a smaller one.");
-			event.target.value = "";
-			return;
+		if (accepted.length > remaining) {
+			toast.error(
+				`Only ${remaining} more image${remaining === 1 ? "" : "s"} can be attached.`
+			);
 		}
-		setter(prepared);
+
+		const additions = accepted
+			.slice(0, remaining)
+			.map((file) => ({ id: nextThumbnailId(), file }));
+		updateImages((current) => [...current, ...additions]);
+	};
+
+	const removeImage = (id) => {
+		updateImages((current) => current.filter((item) => item.id !== id));
 	};
 
 	// Prevents reload when form is submitted
@@ -106,11 +168,10 @@ const Add = ({ token }) => {
 			formData.append("bestseller", bestseller);
 			formData.append("sizes", JSON.stringify(sizes));
 
-			image1 && formData.append("image1", image1);
-			image2 && formData.append("image2", image2);
-			image3 && formData.append("image3", image3);
-			image4 && formData.append("image4", image4);
-			image5 && formData.append("image5", image5);
+			// Preserve the backend contract: image1, image2, ... in attach order.
+			images.forEach((item, index) =>
+				formData.append(`image${index + 1}`, item.file)
+			);
 
 			// send formdata to api
 			const response = await axios.post(
@@ -123,11 +184,7 @@ const Add = ({ token }) => {
 				toast.success(response.data.message);
 				setName("");
 				setDescription("");
-				setImage1(false);
-				setImage2(false);
-				setImage3(false);
-				setImage4(false);
-				setImage5(false);
+				updateImages(() => []);
 				setPrice("");
 				setSizes([]);
 			} else {
@@ -146,99 +203,39 @@ const Add = ({ token }) => {
 		>
 			<div>
 				<p className="mb-2">Upload image(s)</p>
-				<div className="flex gap-2">
-					{/* Product images */}
-					<label htmlFor="image1">
+				<div className="flex flex-wrap items-start gap-3">
+					{/* One picker fills the image1..image5 slots in attach order. */}
+					<label
+						htmlFor="product-images"
+						className="cursor-pointer"
+						title="Add product images"
+					>
 						<img
-							className="object-cover w-20 rounded-lg"
-							src={
-								!image1
-									? assets.upload_area
-									: URL.createObjectURL(image1)
-							}
-							alt={image1 ? "Selected product image 1" : "Upload product image 1"}
+							className="object-cover w-20 h-20 rounded-lg dark:invert"
+							src={assets.upload_area}
+							alt="Upload product images"
 						/>
 						<input
-							onChange={(e) => handleImageChange(e, setImage1)}
+							onChange={handleImageChange}
 							type="file"
-							id="image1"
+							id="product-images"
 							accept="image/*"
+							multiple
 							hidden
 						/>
 					</label>
-					<label htmlFor="image2">
-						<img
-							className="object-cover w-20 rounded-lg"
-							src={
-								!image2
-									? assets.upload_area
-									: URL.createObjectURL(image2)
-							}
-							alt={image2 ? "Selected product image 2" : "Upload product image 2"}
+					{images.map((item, index) => (
+						<ImageThumbnail
+							key={item.id}
+							file={item.file}
+							label={`Product image ${index + 1}`}
+							onRemove={() => removeImage(item.id)}
 						/>
-						<input
-							onChange={(e) => handleImageChange(e, setImage2)}
-							type="file"
-							id="image2"
-							accept="image/*"
-							hidden
-						/>
-					</label>
-					<label htmlFor="image3">
-						<img
-							className="object-cover w-20 rounded-lg"
-							src={
-								!image3
-									? assets.upload_area
-									: URL.createObjectURL(image3)
-							}
-							alt={image3 ? "Selected product image 3" : "Upload product image 3"}
-						/>
-						<input
-							onChange={(e) => handleImageChange(e, setImage3)}
-							type="file"
-							id="image3"
-							accept="image/*"
-							hidden
-						/>
-					</label>
-					<label htmlFor="image4">
-						<img
-							className="object-cover w-20 rounded-lg"
-							src={
-								!image4
-									? assets.upload_area
-									: URL.createObjectURL(image4)
-							}
-							alt={image4 ? "Selected product image 4" : "Upload product image 4"}
-						/>
-						<input
-							onChange={(e) => handleImageChange(e, setImage4)}
-							type="file"
-							id="image4"
-							accept="image/*"
-							hidden
-						/>
-					</label>
-					<label htmlFor="image5">
-						<img
-							className="object-cover w-20 rounded-lg"
-							src={
-								!image5
-									? assets.upload_area
-									: URL.createObjectURL(image5)
-							}
-							alt={image5 ? "Selected product image 5" : "Upload product image 5"}
-						/>
-						<input
-							onChange={(e) => handleImageChange(e, setImage5)}
-							type="file"
-							id="image5"
-							accept="image/*"
-							hidden
-						/>
-					</label>
+					))}
 				</div>
+				<p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+					{images.length} of {MAX_IMAGES} images attached
+				</p>
 			</div>
 
 			{/* Product information */}
