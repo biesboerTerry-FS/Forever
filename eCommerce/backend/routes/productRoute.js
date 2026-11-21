@@ -8,6 +8,7 @@ import {
 } from "../controllers/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
+import { capBodyStrings, requireId } from "../middleware/validate.js";
 
 const productRouter = express.Router();
 
@@ -21,10 +22,12 @@ productRouter.post(
 		{ name: "image4", maxCount: 1 },
 		{ name: "image5", maxCount: 1 },
 	]),
+	capBodyStrings(1000),
 	addProduct
 );
-productRouter.post("/remove", adminAuth, removeProduct);
-productRouter.post("/update", adminAuth, updateProduct);
+productRouter.post("/remove", adminAuth, requireId, removeProduct);
+productRouter.post("/update", adminAuth, capBodyStrings(1000), updateProduct);
+// Public browse routes stay open.
 productRouter.get("/list", listProduct);
 productRouter.post("/single", singleProduct);
 

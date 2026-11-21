@@ -1,35 +1,44 @@
 // Authenticates a shopper's cart/order/review requests.
-import jwt from "jsonwebtoken";
+import { readToken, verifyJwt } from "./jwt.js";
 
-const authUser = async (request, response, next) => {
-	const { token } = request.headers;
+const unauthorized = (response) =>
+	response.status(401).json({
+		success: false,
+		message: "Not authorized. Login again",
+	});
 
-	if (!token) {
-		return response.status(401).json({
-			success: false,
-			message: "Not authorized. Login again",
-		});
-	}
+const authUser = (request, response, next) => {
+	const token = readToken(request);
+	if (!token) return unauthorized(response);
 
 	try {
-		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+		const decoded = verifyJwt(token);
 
-		// Admin tokens carry a role but no user id and must not be usable as
-		// shopper tokens.
-		if (!decoded || typeof decoded !== "object" || !decoded.id) {
-			return response.status(401).json({
-				success: false,
-				message: "Not authorized. Login again",
-			});
+		// Shopper tokens carry only `id`. Admin/employee tokens are role-scoped
+		// and must never be accepted as shopper tokens (and vice versa).
+		if (
+			!decoded ||
+			typeof decoded !== "object" ||
+			!decoded.id ||
+			decoded.role
+		) {
+			return unauthorized(response);
 		}
 
-		request.body.userId = decoded.id;
+		const userId = String(decoded.id);
+		if (
+			!request.body ||
+			typeof request.body !== "object" ||
+			Array.isArray(request.body)
+		) {
+			request.body = {};
+		}
+		request.body.userId = userId;
+		request.auth = { userId };
 		next();
-	} catch (error) {
-		response.status(401).json({
-			success: false,
-			message: error.message,
-		});
+	} catch {
+		// Don't echo verifier internals (malformed/expired/etc.) to clients.
+		return unauthorized(response);
 	}
 };
 

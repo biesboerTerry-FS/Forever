@@ -6,12 +6,16 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { createClerkClient, verifyToken } from "@clerk/backend";
 import { sendPasswordResetEmail } from "../utils/email.js";
+import { getJwtSecret } from "../middleware/jwt.js";
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
 
 const createToken = (id) => {
-	return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+	return jwt.sign({ id }, getJwtSecret(), {
+		algorithm: "HS256",
+		expiresIn: "7d",
+	});
 };
 
 // Site URL used in emails. Prefer an explicit FRONTEND_URL, then the request
@@ -148,7 +152,8 @@ const adminLogin = async (request, response) => {
 		) {
 			// Scope the token to the admin role. Never embed credentials in the
 			// JWT payload — it is only base64-encoded and readable by anyone.
-			const token = jwt.sign({ role: "admin" }, process.env.JWT_SECRET, {
+			const token = jwt.sign({ role: "admin" }, getJwtSecret(), {
+				algorithm: "HS256",
 				expiresIn: "12h",
 			});
 			response.json({

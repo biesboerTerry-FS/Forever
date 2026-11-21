@@ -4,6 +4,7 @@
 import jwt from "jsonwebtoken";
 import employeeModel from "../models/employeeModel.js";
 import scheduleModel from "../models/scheduleModel.js";
+import { getJwtSecret } from "../middleware/jwt.js";
 
 // Two seeded demo employees are available to the portfolio demo sign-in.
 const DEMO_EMPLOYEES = {
@@ -38,8 +39,8 @@ const publicProfile = (employee) => ({
 const signEmployeeToken = (employee) =>
 	jwt.sign(
 		{ role: "employee", employeeId: String(employee._id) },
-		process.env.JWT_SECRET,
-		{ expiresIn: "12h" }
+		getJwtSecret(),
+		{ algorithm: "HS256", expiresIn: "12h" }
 	);
 
 // POST /api/employee/demo — public, portfolio-only sign-in. Disable with

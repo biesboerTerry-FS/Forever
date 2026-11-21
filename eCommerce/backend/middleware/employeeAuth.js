@@ -1,38 +1,35 @@
 // Scopes the employee self-service API to a single employee record. Employee
 // tokens carry `role: "employee"` plus an `employeeId` claim and can never be
 // used with the admin or shopper endpoints (and vice versa).
-import jwt from "jsonwebtoken";
+import { readToken, verifyJwt } from "./jwt.js";
+
+const unauthorized = (response) =>
+	response.status(401).json({
+		success: false,
+		message: "Not authorized. Please sign in again.",
+	});
 
 const employeeAuth = (request, response, next) => {
-	try {
-		const { token } = request.headers;
-		if (!token) {
-			return response.status(401).json({
-				success: false,
-				message: "Not authorized. Please sign in again.",
-			});
-		}
+	const token = readToken(request);
+	if (!token) return unauthorized(response);
 
-		const decoded = jwt.verify(token, process.env.JWT_SECRET);
+	try {
+		const decoded = verifyJwt(token);
 		if (
 			!decoded ||
 			typeof decoded !== "object" ||
 			decoded.role !== "employee" ||
-			!decoded.employeeId
+			!decoded.employeeId ||
+			decoded.id
 		) {
-			return response.status(401).json({
-				success: false,
-				message: "Not authorized. Please sign in again.",
-			});
+			return unauthorized(response);
 		}
 
 		request.employeeAuth = { employeeId: String(decoded.employeeId) };
+		request.auth = { role: "employee", employeeId: String(decoded.employeeId) };
 		next();
-	} catch (error) {
-		response.status(401).json({
-			success: false,
-			message: error.message,
-		});
+	} catch {
+		return unauthorized(response);
 	}
 };
 

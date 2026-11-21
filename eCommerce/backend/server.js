@@ -15,6 +15,11 @@ import adminRouter from "./routes/adminRoute.js";
 import newsletterRouter from "./routes/newsletterRoute.js";
 import hrRouter from "./routes/hrRoute.js";
 import employeeRouter from "./routes/employeeRoute.js";
+import { warnIfWeakJwtSecret } from "./middleware/jwt.js";
+
+// Fail loudly (without ever substituting a fallback key) if the deployment
+// forgot to configure a strong signing secret.
+warnIfWeakJwtSecret();
 
 const app = express();
 
