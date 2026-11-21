@@ -14,6 +14,7 @@ import wishlistRouter from "./routes/wishlistRoute.js";
 import adminRouter from "./routes/adminRoute.js";
 import newsletterRouter from "./routes/newsletterRoute.js";
 import hrRouter from "./routes/hrRoute.js";
+import employeeRouter from "./routes/employeeRoute.js";
 
 const app = express();
 
@@ -121,6 +122,7 @@ app.use("/api/review", reviewRouter);
 app.use("/api/wishlist", wishlistRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/hr", hrRouter);
+app.use("/api/employee", employeeRouter);
 
 // Connect once per cold start as an optimization; request middleware above is the
 // source of truth for readiness.

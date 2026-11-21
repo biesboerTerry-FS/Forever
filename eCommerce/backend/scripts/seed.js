@@ -362,8 +362,9 @@ async function main() {
 	const employees = await employeeModel.insertMany([
 		{ name: "Alex Morgan", email: "alex.manager@forever.test", role: "Store Manager", department: "Retail", status: "Active", phone: "555-0101", hourlyRate: 32, hireDate: now - 400 * 24 * 60 * 60 * 1000, notes: "Oversees store operations and team performance." },
 		{ name: "Jordan Lee", email: "jordan.manager@forever.test", role: "Assistant Manager", department: "Retail", status: "Active", phone: "555-0102", hourlyRate: 28, hireDate: now - 320 * 24 * 60 * 60 * 1000, notes: "Supports scheduling and merchandising." },
-		{ name: "Sam Rivera", email: "sam.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0103", hourlyRate: 20, hireDate: now - 200 * 24 * 60 * 60 * 1000 },
-		{ name: "Taylor Kim", email: "taylor.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0104", hourlyRate: 19, hireDate: now - 150 * 24 * 60 * 60 * 1000 },
+		// Two demo employees can sign in to the self-service portal at /employee.
+		{ name: "Sam Rivera", email: "sam.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0103", address: "412 Birch Lane, Apt 3, Portland, OR 97205", hourlyRate: 20, hireDate: now - 200 * 24 * 60 * 60 * 1000 },
+		{ name: "Taylor Kim", email: "taylor.staff@forever.test", role: "Sales Associate", department: "Retail", status: "Active", phone: "555-0104", address: "88 Cedar Street, Portland, OR 97209", hourlyRate: 19, hireDate: now - 150 * 24 * 60 * 60 * 1000 },
 		{ name: "Casey Patel", email: "casey.fulfillment@forever.test", role: "Fulfillment Specialist", department: "Operations", status: "Active", phone: "555-0105", hourlyRate: 22, hireDate: now - 180 * 24 * 60 * 60 * 1000 },
 		{ name: "Riley Chen", email: "riley.support@forever.test", role: "Customer Support", department: "Support", status: "On Leave", phone: "555-0106", hourlyRate: 21, hireDate: now - 120 * 24 * 60 * 60 * 1000 },
 	]);

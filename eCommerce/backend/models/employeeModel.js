@@ -7,6 +7,7 @@ const employeeSchema = new mongoose.Schema({
 	department: { type: String, default: "Retail" },
 	status: { type: String, default: "Active" },
 	phone: { type: String, default: "" },
+	address: { type: String, default: "" },
 	hireDate: { type: Number, default: () => Date.now() },
 	hourlyRate: { type: Number, default: 0 },
 	managerId: { type: String, default: null },

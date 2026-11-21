@@ -9,6 +9,8 @@ import Product from "./pages/Product";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import DemoLogin from "./pages/DemoLogin";
+import EmployeeLogin from "./pages/EmployeeLogin";
+import EmployeePortal from "./pages/EmployeePortal";
 import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
 import NavBar from "./components/NavBar";
@@ -88,6 +90,8 @@ const App = () => {
 						<Route path="/cart" element={<Cart />} />
 						<Route path="/login" element={<Login />} />
 						<Route path="/demo-login" element={<DemoLogin />} />
+						<Route path="/employee-login" element={<EmployeeLogin />} />
+						<Route path="/employee" element={<EmployeePortal />} />
 						<Route path="/forgot-password" element={<ForgotPassword />} />
 						<Route path="/reset-password" element={<ResetPassword />} />
 						<Route path="/place-order" element={<PlaceOrder />} />

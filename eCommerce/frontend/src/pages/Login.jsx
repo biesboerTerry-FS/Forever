@@ -53,6 +53,16 @@ const Login = () => {
 				</div>
 			)}
 			<Link
+				to="/employee-login"
+				data-testid="demo-employee-login"
+				className="block w-full px-5 py-3 text-sm font-medium text-center text-gray-900 transition-colors bg-white border border-gray-300 rounded-full hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-100 dark:hover:bg-gray-700"
+			>
+				Try demo employee
+			</Link>
+			<p className="-mt-2 text-xs text-center text-gray-500 dark:text-gray-400">
+				See your own details and upcoming shifts in the employee portal.
+			</p>
+			<Link
 				to="/forgot-password"
 				className="text-sm underline cursor-pointer hover:text-black dark:hover:text-white"
 			>
