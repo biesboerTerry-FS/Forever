@@ -459,6 +459,67 @@ const removePushToken = async (request, response) => {
 	}
 };
 
+//& Signed-in shopper profile (GET/PATCH /api/user/profile).
+const PROFILE_FIELDS = ["name", "email", "phone"];
+
+const publicProfile = (user) => ({
+	name: user.name || "",
+	email: user.email || "",
+	phone: user.phone || "",
+});
+
+const getProfile = async (request, response) => {
+	try {
+		const user = await userModel
+			.findById(request.auth.userId)
+			.select(PROFILE_FIELDS.join(" "));
+		if (!user) {
+			return response.status(404).json({ success: false, message: "Profile not found" });
+		}
+		return response.json({ success: true, profile: publicProfile(user) });
+	} catch (error) {
+		return response.status(500).json({ success: false, message: error.message });
+	}
+};
+
+const updateProfile = async (request, response) => {
+	try {
+		const updates = {};
+		for (const field of PROFILE_FIELDS) {
+			if (request.body[field] !== undefined) {
+				updates[field] = String(request.body[field]).trim();
+			}
+		}
+		if (updates.email) {
+			updates.email = updates.email.toLowerCase();
+			if (!validator.isEmail(updates.email)) {
+				return response.status(400).json({ success: false, message: "Please enter a valid email" });
+			}
+			const taken = await userModel.findOne({
+				email: updates.email,
+				_id: { $ne: request.auth.userId },
+			});
+			if (taken) {
+				return response.status(400).json({ success: false, message: "That email is already in use" });
+			}
+		}
+
+		const user = await userModel
+			.findByIdAndUpdate(request.auth.userId, { $set: updates }, { new: true, runValidators: true })
+			.select(PROFILE_FIELDS.join(" "));
+		if (!user) {
+			return response.status(404).json({ success: false, message: "Profile not found" });
+		}
+		return response.json({
+			success: true,
+			profile: publicProfile(user),
+			message: "Profile updated.",
+		});
+	} catch (error) {
+		return response.status(500).json({ success: false, message: error.message });
+	}
+};
+
 //& Reset password using the token from the email.
 const resetPassword = async (request, response) => {
 	try {
@@ -520,4 +581,6 @@ export {
 	resetPassword,
 	registerPushToken,
 	removePushToken,
+	getProfile,
+	updateProfile,
 };

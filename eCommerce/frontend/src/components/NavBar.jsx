@@ -133,6 +133,20 @@ const NavBar = () => {
 						CONTACT
 					</NavLink>
 				</li>
+				<li>
+					<NavLink
+						to="/profile"
+						className={({ isActive }) =>
+							`px-4 py-2 rounded-full transition-colors ${
+								isActive
+									? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+									: "hover:bg-gray-100 dark:hover:bg-gray-800"
+							}`
+						}
+					>
+						MY PROFILE
+					</NavLink>
+				</li>
 			</ul>
 
 			<div className="flex items-center gap-6">
@@ -179,6 +193,16 @@ const NavBar = () => {
 								<p className="font-medium text-gray-800 dark:text-gray-100">
 									Hi, {user?.name?.split(" ")[0] || "there"}
 								</p>
+								<button
+									type="button"
+									onClick={() => {
+										setProfileOpen(false);
+										navigate("/profile");
+									}}
+									className="text-left cursor-pointer hover:text-black dark:hover:text-white"
+								>
+									My profile
+								</button>
 								<button
 									type="button"
 									onClick={() => {
@@ -318,6 +342,13 @@ const NavBar = () => {
 						to="/contact"
 					>
 						CONTACT
+					</NavLink>
+					<NavLink
+						onClick={() => setVisible(false)}
+						className="py-2 pl-6 border"
+						to="/profile"
+					>
+						MY PROFILE
 					</NavLink>
 				</div>
 			</div>
