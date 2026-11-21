@@ -12,6 +12,7 @@ import Schedule from "./pages/Schedule";
 import Learning from "./pages/Learning";
 import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
+import Announcements from "./pages/Announcements";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastContainer } from "react-toastify";
@@ -149,6 +150,7 @@ const App = () => {
 									<Route path="/learning" element={<Learning token={token} />} />
 									<Route path="/payroll" element={<Payroll token={token} />} />
 									<Route path="/reports" element={<Reports token={token} />} />
+									<Route path="/announcements" element={<Announcements />} />
 								</Routes>
 							</ErrorBoundary>
 						</main>

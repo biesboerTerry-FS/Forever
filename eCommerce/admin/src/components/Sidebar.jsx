@@ -60,6 +60,17 @@ const Sidebar = () => {
 				</NavLink>
 
 				<div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-800">
+					<p className="hidden px-3 mb-1 text-xs font-medium tracking-wide text-gray-400 uppercase md:block dark:text-gray-500">Communication</p>
+				</div>
+				<NavLink className={linkClass} to="/announcements">
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+						<path strokeLinecap="round" strokeLinejoin="round" d="M3 11l18-5v12L3 14v-3z" />
+						<path strokeLinecap="round" strokeLinejoin="round" d="M11.6 16.8a3 3 0 11-5.8-1.6" />
+					</svg>
+					<p className="hidden md:block">Announcements</p>
+				</NavLink>
+
+				<div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-800">
 					<p className="hidden px-3 mb-1 text-xs font-medium tracking-wide text-gray-400 uppercase md:block dark:text-gray-500">Team & Ops</p>
 				</div>
 				<NavLink className={linkClass} to="/employees">

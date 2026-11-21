@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
+import LatestBulletin from "../components/LatestBulletin";
 
 const StatCard = ({ label, value, hint }) => (
 	<div className="p-5 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:shadow-none dark:ring-1 dark:ring-gray-800">
@@ -83,6 +84,9 @@ const Dashboard = ({ token }) => {
 					Refresh
 				</button>
 			</div>
+
+			{/* Newest active bulletin (demo mode, localStorage) */}
+			<LatestBulletin />
 
 			{/* Headline stats */}
 			<div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
