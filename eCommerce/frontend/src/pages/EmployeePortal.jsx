@@ -24,6 +24,24 @@ import {
 } from "../utils/ops";
 
 const AVAILABILITY_KEY = "forever-employee-availability";
+const BLOCKS_KEY = "forever-employee-availability-blocks";
+
+const loadLocalBlocks = () => {
+	try {
+		const saved = JSON.parse(localStorage.getItem(BLOCKS_KEY) || "[]");
+		return Array.isArray(saved) ? saved : [];
+	} catch {
+		return [];
+	}
+};
+
+const saveLocalBlocks = (blocks) => {
+	try {
+		localStorage.setItem(BLOCKS_KEY, JSON.stringify(blocks));
+	} catch {
+		// storage can be disabled; in-memory state still works
+	}
+};
 
 const formatShiftDate = (value) => {
 	const date = new Date(`${value}T00:00:00`);
@@ -53,9 +71,25 @@ const TABS = [
 	{ key: "schedule", label: "Schedule" },
 ];
 
+// Consistent 20px currentColor icons keep the employee tabs legible in both
+// light and dark mode without image-inversion hacks.
+const TabIcon = ({ name }) => {
+	const paths = {
+		overview: "M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z",
+		orders: "M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.125-.504 1.125-1.125v-3.026a2.25 2.25 0 00-.659-1.591l-3.099-3.099A2.25 2.25 0 0015.526 9H14.25V5.625c0-.621-.504-1.125-1.125-1.125h-9A1.125 1.125 0 003 5.625v7.5M14.25 9h1.276a.75.75 0 01.53.22l2.724 2.724a.75.75 0 01.22.53v1.776",
+		messages: "M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75",
+		schedule: "M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5",
+	};
+	return (
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-5 w-5 shrink-0" aria-hidden="true">
+			<path strokeLinecap="round" strokeLinejoin="round" d={paths[name] || paths.overview} />
+		</svg>
+	);
+};
+
 const EmployeePortal = () => {
 	const { backendUrl, navigate } = useContext(ShopContext);
-	const [params, setParams] = useSearchParams();
+	const [params] = useSearchParams();
 	const tab = TABS.some((item) => item.key === params.get("tab"))
 		? params.get("tab")
 		: "overview";
@@ -83,6 +117,9 @@ const EmployeePortal = () => {
 	const [showRequestForm, setShowRequestForm] = useState(null);
 	const [requestForm, setRequestForm] = useState({ date: "", endDate: "", reason: "" });
 	const [messageForm, setMessageForm] = useState({ subject: "", body: "" });
+	const [blocks, setBlocks] = useState(loadLocalBlocks);
+	const [blockForm, setBlockForm] = useState({ date: "", startTime: "09:00", endTime: "12:00", reason: "" });
+	const [showBlockForm, setShowBlockForm] = useState(false);
 
 	useEffect(() => {
 		if (!session) {
@@ -138,6 +175,17 @@ const EmployeePortal = () => {
 						}
 					} catch {
 						// keep local demo requests
+					}
+					try {
+						const response = await axios.get(`${backendUrl}/api/employee/blocks`, {
+							headers: { token: session.token },
+						});
+						if (response.data?.success && Array.isArray(response.data.blocks)) {
+							setBlocks(response.data.blocks);
+							saveLocalBlocks(response.data.blocks);
+						}
+					} catch {
+						// keep locally cached blocks
 					}
 				}
 			} finally {
@@ -327,6 +375,59 @@ const EmployeePortal = () => {
 		}
 	};
 
+	const saveBlock = async (event) => {
+		event.preventDefault();
+		if (!blockForm.date || !blockForm.startTime || !blockForm.endTime) return;
+		if (blockForm.endTime <= blockForm.startTime) {
+			toast.error("End time must be after start time.");
+			return;
+		}
+		const local = {
+			id: `local-block-${Date.now()}`,
+			employeeId: employee?.id || "me",
+			employeeName: employee?.name || "Employee",
+			...blockForm,
+		};
+		if (session?.token && backendUrl) {
+			try {
+				const response = await axios.post(
+					`${backendUrl}/api/employee/blocks`,
+					blockForm,
+					{ headers: { token: session.token } }
+				);
+				if (response.data?.success && response.data.block) {
+					Object.assign(local, response.data.block);
+				}
+			} catch {
+				// saved locally
+			}
+		}
+		const next = [local, ...blocks].sort((a, b) =>
+			`${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`)
+		);
+		setBlocks(next);
+		saveLocalBlocks(next);
+		setBlockForm({ date: "", startTime: "09:00", endTime: "12:00", reason: "" });
+		setShowBlockForm(false);
+		toast.success("Unavailable time saved.");
+	};
+
+	const removeBlock = async (id) => {
+		const next = blocks.filter((block) => String(block._id || block.id) !== String(id));
+		setBlocks(next);
+		saveLocalBlocks(next);
+		if (session?.token && backendUrl && !String(id).startsWith("local-")) {
+			try {
+				await axios.delete(`${backendUrl}/api/employee/blocks/${id}`, {
+					headers: { token: session.token },
+				});
+			} catch {
+				// local removal already applied
+			}
+		}
+		toast.success("Unavailable time removed.");
+	};
+
 	if (!session) {
 		return (
 			<div
@@ -385,18 +486,19 @@ const EmployeePortal = () => {
 				</button>
 			</div>
 
-			<nav data-testid="employee-nav" className="mb-6 flex flex-wrap gap-2 border-b border-gray-200 pb-3 dark:border-gray-800">
+			<nav data-testid="employee-nav" className="mb-6 flex flex-wrap gap-2 pb-1">
 				{TABS.map((item) => (
 					<Link
 						key={item.key}
 						to={`/employee?tab=${item.key}`}
 						data-testid={`employee-nav-${item.key}`}
-						className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+						className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
 							tab === item.key
 								? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
 								: "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
 						}`}
 					>
+						<TabIcon name={item.key} />
 						{item.label}
 					</Link>
 				))}
@@ -724,6 +826,97 @@ const EmployeePortal = () => {
 										<button type="button" onClick={() => setShowRequestForm(null)} className="rounded-full border border-gray-300 px-5 py-2 text-sm dark:border-gray-700">Cancel</button>
 									</div>
 								</form>
+							)}
+						</div>
+					</div>
+
+					<div data-testid="availability-blocks" className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900">
+						<div className="flex flex-wrap items-center justify-between gap-3">
+							<div>
+								<h3 className="text-lg font-medium">Unavailable dates &amp; times</h3>
+								<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+									Mark specific dates and time ranges when you can&apos;t take shifts. Owners see these in Schedule and HR.
+								</p>
+							</div>
+							<button
+								type="button"
+								data-testid="add-availability-block"
+								onClick={() => setShowBlockForm((value) => !value)}
+								className="rounded-full border border-gray-300 px-4 py-2 text-sm dark:border-gray-700"
+							>
+								{showBlockForm ? "Cancel" : "Add unavailable time"}
+							</button>
+						</div>
+
+						{showBlockForm && (
+							<form onSubmit={saveBlock} data-testid="availability-block-form" className="mt-4 grid gap-3 rounded-lg bg-gray-50 p-4 sm:grid-cols-4 dark:bg-gray-800/60">
+								<input
+									aria-label="Unavailable date"
+									data-testid="block-date"
+									type="date"
+									value={blockForm.date}
+									onChange={(event) => setBlockForm({ ...blockForm, date: event.target.value })}
+									className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+									required
+								/>
+								<input
+									aria-label="Start time"
+									data-testid="block-start"
+									type="time"
+									value={blockForm.startTime}
+									onChange={(event) => setBlockForm({ ...blockForm, startTime: event.target.value })}
+									className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+									required
+								/>
+								<input
+									aria-label="End time"
+									data-testid="block-end"
+									type="time"
+									value={blockForm.endTime}
+									onChange={(event) => setBlockForm({ ...blockForm, endTime: event.target.value })}
+									className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+									required
+								/>
+								<input
+									aria-label="Reason"
+									data-testid="block-reason"
+									placeholder="Reason (optional)"
+									maxLength={300}
+									value={blockForm.reason}
+									onChange={(event) => setBlockForm({ ...blockForm, reason: event.target.value })}
+									className="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-700 dark:bg-gray-950"
+								/>
+								<button
+									type="submit"
+									data-testid="save-block"
+									className="rounded-full bg-gray-900 px-5 py-2 text-sm font-medium text-white sm:col-span-4 dark:bg-white dark:text-gray-900"
+								>
+									Save unavailable time
+								</button>
+							</form>
+						)}
+
+						<div className="mt-4 space-y-2">
+							{blocks.map((block) => (
+								<div key={String(block._id || block.id)} data-testid="availability-block-row" className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gray-50 px-4 py-3 text-sm dark:bg-gray-800/60">
+									<div>
+										<p className="font-medium text-gray-900 dark:text-gray-100">
+											{formatShiftDate(block.date)} · {block.startTime}–{block.endTime}
+										</p>
+										<p className="text-gray-600 dark:text-gray-300">{block.reason || "No reason provided"}</p>
+									</div>
+									<button
+										type="button"
+										data-testid="delete-block"
+										onClick={() => removeBlock(block._id || block.id)}
+										className="text-red-500 hover:underline"
+									>
+										Remove
+									</button>
+								</div>
+							))}
+							{blocks.length === 0 && (
+								<p className="text-sm text-gray-500">No unavailable dates marked yet.</p>
 							)}
 						</div>
 					</div>

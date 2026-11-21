@@ -7,14 +7,16 @@ import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { API_URL } from "../api";
 import { toastSuccess } from "../utils/toast";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
-function LinkRow({ icon, label, onPress }) {
+function LinkRow({ icon, label, onPress, testID }) {
+	const { colors } = useTheme();
 	return (
 		<Pressable
 			onPress={onPress}
 			accessibilityRole="button"
 			accessibilityLabel={label}
+			testID={testID}
 			style={{
 				flexDirection: "row",
 				alignItems: "center",
@@ -31,6 +33,7 @@ function LinkRow({ icon, label, onPress }) {
 }
 
 export default function ProfileScreen({ navigation }) {
+	const { colors, dark, toggleTheme } = useTheme();
 	const { user, token, wishlist, signOut: backendSignOut } = useShop();
 	const { isSignedIn, signOut } = useAuth();
 	const { user: clerkUser } = useUser();
@@ -102,7 +105,7 @@ export default function ProfileScreen({ navigation }) {
 								justifyContent: "center",
 							}}
 						>
-							<Text style={{ color: "#fff", fontSize: 18, fontWeight: "600" }}>
+							<Text style={{ color: colors.onAccent, fontSize: 18, fontWeight: "600" }}>
 								{(user?.name || clerkUser?.firstName || "U")?.[0]?.toUpperCase()}
 							</Text>
 						</View>
@@ -141,6 +144,18 @@ export default function ProfileScreen({ navigation }) {
 				)}
 
 				<View style={{ marginTop: 8 }}>
+					<LinkRow
+						icon="person-outline"
+						label="Edit profile"
+						testID="profile-edit"
+						onPress={() => navigation.navigate("EditProfile")}
+					/>
+					<LinkRow
+						icon={dark ? "sunny-outline" : "moon-outline"}
+						label={dark ? "Dark mode: On" : "Dark mode: Off"}
+						testID="profile-dark-mode"
+						onPress={toggleTheme}
+					/>
 					<LinkRow
 						icon="receipt-outline"
 						label="My orders"

@@ -12,11 +12,12 @@ import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { toastSuccess, toastError } from "../utils/toast";
-import { colors, money, spacing } from "../theme";
+import { useTheme, money, spacing } from "../theme";
 
 const DELIVERY = 10;
 
 export default function CartScreen({ navigation }) {
+	const { colors } = useTheme();
 	const {
 		cartLines,
 		cartCount,
@@ -204,6 +205,7 @@ export default function CartScreen({ navigation }) {
 }
 
 function Row({ label, value, bold }) {
+	const { colors } = useTheme();
 	return (
 		<View
 			style={{

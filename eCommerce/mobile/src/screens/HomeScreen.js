@@ -10,10 +10,12 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Screen from "../components/Screen";
 import ProductCard from "../components/ProductCard";
+import Footer from "../components/Footer";
 import { useShop } from "../context/ShopContext";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function HomeScreen({ navigation }) {
+	const { colors, dark, toggleTheme } = useTheme();
 	const { products, productsLoading, cartCount, user } = useShop();
 	const { width } = useWindowDimensions();
 	const cardWidth = (width - spacing.md * 2 - spacing.md) / 2;
@@ -54,6 +56,16 @@ export default function HomeScreen({ navigation }) {
 									{user ? `Welcome back, ${user.name.split(" ")[0]}` : "Timeless essentials"}
 								</Text>
 							</View>
+							<View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
+							<Pressable
+								onPress={toggleTheme}
+								testID="theme-toggle"
+								accessibilityRole="button"
+								accessibilityLabel={dark ? "Switch to light mode" : "Switch to dark mode"}
+								style={{ padding: 6 }}
+							>
+								<Ionicons name={dark ? "sunny-outline" : "moon-outline"} size={22} color={colors.ink} />
+							</Pressable>
 							<Pressable
 								onPress={() => navigation.navigate("Cart")}
 								style={{ padding: 6 }}
@@ -75,10 +87,11 @@ export default function HomeScreen({ navigation }) {
 											justifyContent: "center",
 										}}
 									>
-										<Text style={{ color: "#fff", fontSize: 10 }}>{cartCount}</Text>
+										<Text style={{ color: colors.onAccent, fontSize: 10 }}>{cartCount}</Text>
 									</View>
 								)}
 							</Pressable>
+							</View>
 						</View>
 
 						{/* Hero */}
@@ -120,7 +133,7 @@ export default function HomeScreen({ navigation }) {
 								accessibilityRole="button"
 								accessibilityLabel="Shop the collection"
 							>
-								<Text style={{ color: "#fff", fontSize: 12, fontWeight: "600" }}>
+								<Text style={{ color: colors.onAccent, fontSize: 12, fontWeight: "600" }}>
 									SHOP THE COLLECTION
 								</Text>
 							</Pressable>
@@ -147,6 +160,11 @@ export default function HomeScreen({ navigation }) {
 						{productsLoading && (
 							<ActivityIndicator style={{ marginVertical: 24 }} />
 						)}
+					</View>
+				}
+				ListFooterComponent={
+					<View style={{ paddingHorizontal: spacing.md }}>
+						<Footer navigation={navigation} />
 					</View>
 				}
 			/>

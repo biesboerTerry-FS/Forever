@@ -2,9 +2,10 @@ import React, { useEffect } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { SignIn, useAuth } from "@clerk/react";
 import { useShop } from "../context/ShopContext";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function LoginScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { token } = useShop();
 	const { isSignedIn } = useAuth();
 

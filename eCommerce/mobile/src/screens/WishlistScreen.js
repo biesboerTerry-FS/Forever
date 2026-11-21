@@ -12,9 +12,10 @@ import ProductCard from "../components/ProductCard";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { toastSuccess, toastError } from "../utils/toast";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function WishlistScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { products, wishlist, toggleWishlist } = useShop();
 	const { width } = useWindowDimensions();
 	const cardWidth = (width - spacing.md * 2 - spacing.md) / 2;
@@ -81,7 +82,7 @@ export default function WishlistScreen({ navigation }) {
 									width: 30,
 									height: 30,
 									borderRadius: 15,
-									backgroundColor: "#fff",
+									backgroundColor: colors.bg,
 									alignItems: "center",
 									justifyContent: "center",
 								}}

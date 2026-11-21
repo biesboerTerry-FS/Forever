@@ -155,13 +155,11 @@ const NavBar = () => {
 					type="button"
 					onClick={openSearch}
 					aria-label="Search products"
-					className="flex items-center justify-center"
+					className="flex items-center justify-center text-gray-700 transition-colors hover:text-gray-950 dark:text-gray-200 dark:hover:text-white"
 				>
-					<img
-						src={assets.search_icon}
-						className="w-5 dark:invert"
-						alt=""
-					/>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-5 w-5" aria-hidden="true">
+						<path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+					</svg>
 				</button>
 
 				<div className="relative group">
@@ -174,13 +172,11 @@ const NavBar = () => {
 						}
 						aria-label={isSignedIn || token ? "Account menu" : "Sign in"}
 						aria-expanded={isSignedIn || token ? profileOpen : undefined}
-						className="flex items-center justify-center"
+						className="flex items-center justify-center text-gray-700 transition-colors hover:text-gray-950 dark:text-gray-200 dark:hover:text-white"
 					>
-						<img
-							src={assets.profile_icon}
-							className="w-5 dark:invert"
-							alt=""
-						/>
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-5 w-5" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+						</svg>
 					</button>
 					{/* Dropdown menu */}
 					{(isSignedIn || token) && (
@@ -237,7 +233,7 @@ const NavBar = () => {
 
 				<Link
 					to="/wishlist"
-					className="relative"
+					className="relative text-gray-700 transition-colors hover:text-gray-950 dark:text-gray-200 dark:hover:text-white"
 					aria-label="Wishlist"
 				>
 					<svg
@@ -255,7 +251,7 @@ const NavBar = () => {
 						/>
 					</svg>
 					{wishlist.length > 0 && (
-						<p className="absolute right-[-6px] bottom-[-5px] w-4 text-center leading-4 bg-black dark:bg-white text-white dark:text-gray-900 aspect-square rounded-full text-[8px]">
+						<p className="absolute -right-2 -bottom-1.5 min-w-[17px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[17px] text-white ring-2 ring-white dark:bg-rose-500 dark:ring-gray-900">
 							{wishlist.length}
 						</p>
 					)}
@@ -263,34 +259,34 @@ const NavBar = () => {
 
 				<Link
 					to="/cart"
-					className={`relative inline-flex transition-transform duration-300 ${cartBump ? "scale-125" : "scale-100"}`}
+					className={`relative inline-flex text-gray-700 transition-transform duration-300 hover:text-gray-950 dark:text-gray-200 dark:hover:text-white ${cartBump ? "scale-125" : "scale-100"}`}
 					aria-label={`Cart, ${cartCount} ${
 						cartCount === 1 ? "item" : "items"
 					}`}
+					data-testid="cart-link"
 				>
-					<img
-						src={assets.cart_icon}
-						className="w-5 min-w-5 dark:invert"
-						alt=""
-					/>
-					<p
-						className={`absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-black dark:bg-white text-white dark:text-gray-900 aspect-square rounded-full text-[8px] transition-transform duration-300 ${cartBump ? "scale-110" : "scale-100"}`}
-					>
-						{cartCount}
-					</p>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-5 w-5" aria-hidden="true">
+						<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" />
+					</svg>
+					{cartCount > 0 && (
+						<p
+							data-testid="cart-badge"
+							className={`absolute -right-2 -bottom-1.5 min-w-[17px] rounded-full bg-rose-600 px-1 text-center text-[10px] font-semibold leading-[17px] text-white ring-2 ring-white transition-transform duration-300 dark:bg-rose-500 dark:ring-gray-900 ${cartBump ? "scale-110" : "scale-100"}`}
+						>
+							{cartCount}
+						</p>
+					)}
 				</Link>
 				<button
 					type="button"
 					onClick={() => setVisible(true)}
 					aria-label="Open menu"
 					aria-expanded={visible}
-					className="flex items-center justify-center sm:hidden"
+					className="flex items-center justify-center text-gray-700 dark:text-gray-200 sm:hidden"
 				>
-					<img
-						src={assets.menu_icon}
-						className="w-5 dark:invert"
-						alt=""
-					/>
+					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-5 w-5" aria-hidden="true">
+						<path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+					</svg>
 				</button>
 			</div>
 			{/* Sidebar menu for small screens */}
@@ -308,11 +304,9 @@ const NavBar = () => {
 						onClick={() => setVisible(false)}
 						className="flex items-center gap-4 p-3 text-left"
 					>
-						<img
-							className="h-4 rotate-180"
-							src={assets.dropdown_icon}
-							alt=""
-						/>
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.7" stroke="currentColor" className="h-4 w-4" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+						</svg>
 						<p>Back</p>
 					</button>
 					<NavLink

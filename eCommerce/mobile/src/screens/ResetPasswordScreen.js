@@ -10,9 +10,10 @@ import {
 } from "react-native";
 import Button from "../components/Button";
 import { api } from "../api";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function ResetPasswordScreen({ navigation, route }) {
+	const { colors } = useTheme();
 	const initialToken = route?.params?.token || "";
 	const [token, setToken] = useState(initialToken);
 	const [password, setPassword] = useState("");
@@ -73,7 +74,7 @@ export default function ResetPasswordScreen({ navigation, route }) {
 					placeholderTextColor={colors.muted}
 					autoCapitalize="none"
 					accessibilityLabel="Reset token"
-					style={inputStyle}
+					style={inputStyle(colors)}
 				/>
 
 				<Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>
@@ -86,7 +87,7 @@ export default function ResetPasswordScreen({ navigation, route }) {
 					placeholderTextColor={colors.muted}
 					secureTextEntry
 					accessibilityLabel="New password"
-					style={inputStyle}
+					style={inputStyle(colors)}
 				/>
 
 				<Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>
@@ -99,7 +100,7 @@ export default function ResetPasswordScreen({ navigation, route }) {
 					placeholderTextColor={colors.muted}
 					secureTextEntry
 					accessibilityLabel="Confirm new password"
-					style={inputStyle}
+					style={inputStyle(colors)}
 				/>
 
 				<Button
@@ -114,11 +115,11 @@ export default function ResetPasswordScreen({ navigation, route }) {
 	);
 }
 
-const inputStyle = {
+const inputStyle = (colors) => ({
 	borderWidth: 1,
 	borderColor: colors.line,
 	paddingHorizontal: 12,
 	paddingVertical: 11,
 	marginBottom: 12,
 	color: colors.ink,
-};
+});

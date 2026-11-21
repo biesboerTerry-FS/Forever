@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,6 +11,7 @@ import CollectionScreen from "../screens/CollectionScreen";
 import CartScreen from "../screens/CartScreen";
 import WishlistScreen from "../screens/WishlistScreen";
 import ProfileScreen from "../screens/ProfileScreen";
+import EditProfileScreen from "../screens/EditProfileScreen";
 import ProductScreen from "../screens/ProductScreen";
 import CheckoutScreen from "../screens/CheckoutScreen";
 import OrdersScreen from "../screens/OrdersScreen";
@@ -19,7 +20,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 import ForgotPasswordScreen from "../screens/ForgotPasswordScreen";
 import ResetPasswordScreen from "../screens/ResetPasswordScreen";
 import { useShop } from "../context/ShopContext";
-import { colors } from "../theme";
+import { useTheme } from "../theme";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,7 @@ const linking = {
 			ForgotPassword: "forgot-password",
 			Login: "login",
 			SignUp: "signup",
+			EditProfile: "edit-profile",
 			Orders: "orders",
 			Product: "product/:id",
 		},
@@ -49,6 +51,7 @@ const TAB_ICONS = {
 
 function Tabs() {
 	const { cartCount } = useShop();
+	const { colors } = useTheme();
 	const insets = useSafeAreaInsets();
 
 	return (
@@ -93,6 +96,7 @@ function Tabs() {
 }
 
 function HeaderBack({ navigation }) {
+	const { colors } = useTheme();
 	if (!navigation.canGoBack()) return null;
 	return (
 		<Pressable
@@ -111,8 +115,23 @@ function HeaderBack({ navigation }) {
 }
 
 export default function RootNavigator({ navigationRef }) {
+	const { dark, colors } = useTheme();
+	const baseTheme = dark ? DarkTheme : DefaultTheme;
+	const navigationTheme = {
+		...baseTheme,
+		dark,
+		colors: {
+			...baseTheme.colors,
+			primary: colors.ink,
+			background: colors.bg,
+			card: colors.bg,
+			text: colors.ink,
+			border: colors.line,
+			notification: colors.danger,
+		},
+	};
 	return (
-		<NavigationContainer ref={navigationRef} linking={linking}>
+		<NavigationContainer ref={navigationRef} linking={linking} theme={navigationTheme}>
 			<Stack.Navigator
 				screenOptions={({ navigation }) => ({
 					headerTintColor: colors.ink,
@@ -126,6 +145,11 @@ export default function RootNavigator({ navigationRef }) {
 					name="Tabs"
 					component={Tabs}
 					options={{ headerShown: false }}
+				/>
+				<Stack.Screen
+					name="EditProfile"
+					component={EditProfileScreen}
+					options={{ title: "Edit profile" }}
 				/>
 				<Stack.Screen name="Product" component={ProductScreen} />
 				<Stack.Screen

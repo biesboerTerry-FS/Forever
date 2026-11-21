@@ -12,9 +12,10 @@ import {
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api } from "../api";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function LoginScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { signIn } = useShop();
 	const [mode, setMode] = useState("login");
 	const [name, setName] = useState("");
@@ -90,7 +91,7 @@ export default function LoginScreen({ navigation }) {
 							placeholder="Full Name"
 							placeholderTextColor={colors.muted}
 							accessibilityLabel="Full name"
-							style={inputStyle}
+							style={inputStyle(colors)}
 						/>
 					</>
 				)}
@@ -106,7 +107,7 @@ export default function LoginScreen({ navigation }) {
 					autoCapitalize="none"
 					keyboardType="email-address"
 					accessibilityLabel="Email"
-					style={inputStyle}
+					style={inputStyle(colors)}
 				/>
 
 				<Text style={{ fontSize: 12, color: colors.muted, marginBottom: 4 }}>
@@ -119,7 +120,7 @@ export default function LoginScreen({ navigation }) {
 					placeholderTextColor={colors.muted}
 					secureTextEntry
 					accessibilityLabel="Password"
-					style={inputStyle}
+					style={inputStyle(colors)}
 				/>
 
 				{mode === "login" && (
@@ -211,11 +212,11 @@ export default function LoginScreen({ navigation }) {
 	);
 }
 
-const inputStyle = {
+const inputStyle = (colors) => ({
 	borderWidth: 1,
 	borderColor: colors.line,
 	paddingHorizontal: 12,
 	paddingVertical: 11,
 	marginBottom: 12,
 	color: colors.ink,
-};
+});

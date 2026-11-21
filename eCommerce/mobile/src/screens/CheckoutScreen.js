@@ -14,7 +14,7 @@ import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api, API_URL } from "../api";
 import { toastSuccess, toastError } from "../utils/toast";
-import { colors, money, spacing } from "../theme";
+import { useTheme, money, spacing } from "../theme";
 
 const DELIVERY = 10;
 
@@ -36,6 +36,7 @@ const FIELDS = [
 ];
 
 export default function CheckoutScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { cartLines, subtotal, clearCart, token, user } = useShop();
 	const [address, setAddress] = useState({
 		firstName: user?.name?.split(" ")[0] || "",
@@ -223,6 +224,7 @@ export default function CheckoutScreen({ navigation }) {
 }
 
 function Row({ label, value, bold }) {
+	const { colors } = useTheme();
 	return (
 		<View
 			style={{

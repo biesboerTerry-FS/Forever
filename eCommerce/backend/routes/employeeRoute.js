@@ -1,5 +1,6 @@
 import express from "express";
 import employeeAuth from "../middleware/employeeAuth.js";
+import adminAuth from "../middleware/adminAuth.js";
 import { demoLimiter } from "../middleware/rateLimiters.js";
 import { validateEmployeeProfile } from "../middleware/validate.js";
 import { demoLogin, getMe, patchMe } from "../controllers/employeeController.js";
@@ -7,6 +8,12 @@ import {
 	listMyRequests,
 	createRequest,
 } from "../controllers/workRequestController.js";
+import {
+	listMyBlocks,
+	createBlock,
+	deleteBlock,
+	listAllBlocks,
+} from "../controllers/availabilityController.js";
 
 const employeeRouter = express.Router();
 
@@ -17,5 +24,12 @@ employeeRouter.get("/me", employeeAuth, getMe);
 employeeRouter.patch("/me", employeeAuth, validateEmployeeProfile, patchMe);
 employeeRouter.get("/requests", employeeAuth, listMyRequests);
 employeeRouter.post("/requests", employeeAuth, validateEmployeeProfile, createRequest);
+
+// Date/time availability blocks (JWT-protected, localStorage fallback on clients).
+employeeRouter.get("/blocks", employeeAuth, listMyBlocks);
+employeeRouter.post("/blocks", employeeAuth, createBlock);
+employeeRouter.delete("/blocks/:id", employeeAuth, deleteBlock);
+// Owner/admin read-only view used by Schedule and HR Time-off.
+employeeRouter.get("/blocks/all", adminAuth, listAllBlocks);
 
 export default employeeRouter;

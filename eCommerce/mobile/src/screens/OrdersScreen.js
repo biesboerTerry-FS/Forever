@@ -13,11 +13,12 @@ import Screen from "../components/Screen";
 import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api } from "../api";
-import { colors, money, spacing } from "../theme";
+import { useTheme, money, spacing } from "../theme";
 
 const STEPS = ["Order Placed", "Packing", "Shipped", "Out For Delivery", "Delivered"];
 
 function Timeline({ status }) {
+	const { colors } = useTheme();
 	const current = Math.max(0, STEPS.indexOf(status));
 	return (
 		<View style={{ flexDirection: "row", alignItems: "flex-start", marginTop: 12 }}>
@@ -41,7 +42,7 @@ function Timeline({ status }) {
 									justifyContent: "center",
 								}}
 							>
-								{done && <Ionicons name="checkmark" size={11} color="#fff" />}
+								{done && <Ionicons name="checkmark" size={11} color={colors.onAccent} />}
 							</View>
 							{index !== STEPS.length - 1 && (
 								<View
@@ -72,6 +73,7 @@ function Timeline({ status }) {
 }
 
 export default function OrdersScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { token } = useShop();
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);

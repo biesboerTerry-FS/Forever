@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { backendUrl } from "../App";
+import AvailabilityBlocks from "../components/AvailabilityBlocks";
 import { downloadCsv, downloadPdf } from "../utils/export";
 import {
 	loadScheduleRequests,
@@ -151,6 +152,8 @@ const Schedule = ({ token }) => {
 					{employees.length === 0 && <p className="text-sm text-gray-500">No employees on file.</p>}
 				</div>
 			</div>
+
+			<AvailabilityBlocks token={token} />
 		</div>
 	);
 };

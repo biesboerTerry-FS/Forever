@@ -1,8 +1,9 @@
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { colors } from "../theme";
+import { useTheme } from "../theme";
 
 export default function Screen({ children, style }) {
+	const { colors } = useTheme();
 	return (
 		<SafeAreaView
 			edges={["top"]}

@@ -16,9 +16,10 @@ import Button from "../components/Button";
 import { useShop } from "../context/ShopContext";
 import { api } from "../api";
 import { toastSuccess, toastError } from "../utils/toast";
-import { colors, money, spacing } from "../theme";
+import { useTheme, money, spacing } from "../theme";
 
 export default function ProductScreen({ route, navigation }) {
+	const { colors } = useTheme();
 	const { id } = route.params;
 	const { width } = useWindowDimensions();
 	const {

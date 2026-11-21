@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import AvailabilityBlocks from "../../components/AvailabilityBlocks";
 import { fetchTimeOff, formatDate, setTimeOffStatus } from "../../utils/hr";
 
 const FILTERS = ["All", "Pending", "Approved", "Declined"];
@@ -97,6 +98,8 @@ const HrTimeOff = ({ token }) => {
 					</tbody>
 				</table>
 			</div>
+
+			<AvailabilityBlocks token={token} />
 		</div>
 	);
 };

@@ -5,7 +5,7 @@ import ThemeToggle from "./ThemeToggle";
 
 const Navbar = ({ setToken, dark, setDark }) => {
 	return (
-		<header className="sticky top-0 z-20 flex items-center justify-between px-[4%] py-3 bg-white/90 backdrop-blur dark:bg-gray-900/90">
+		<header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between px-[4%] bg-white/90 backdrop-blur dark:bg-gray-900/90">
 			<Link
 				to="/"
 				title="Back to dashboard"

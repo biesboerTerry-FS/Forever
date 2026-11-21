@@ -10,9 +10,10 @@ import {
 } from "react-native";
 import Button from "../components/Button";
 import { api } from "../api";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 export default function ForgotPasswordScreen({ navigation }) {
+	const { colors } = useTheme();
 	const [email, setEmail] = useState("");
 	const [submitting, setSubmitting] = useState(false);
 	const [sent, setSent] = useState(false);

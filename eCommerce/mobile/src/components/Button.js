@@ -1,6 +1,6 @@
 import React from "react";
 import { Pressable, Text } from "react-native";
-import { colors } from "../theme";
+import { useTheme } from "../theme";
 
 export default function Button({
 	title,
@@ -9,6 +9,7 @@ export default function Button({
 	disabled = false,
 	style,
 }) {
+	const { colors } = useTheme();
 	const primary = variant === "primary";
 	return (
 		<Pressable
@@ -33,7 +34,7 @@ export default function Button({
 		>
 			<Text
 				style={{
-					color: primary ? "#fff" : colors.ink,
+					color: primary ? colors.onAccent : colors.ink,
 					fontWeight: "600",
 					fontSize: 13,
 					letterSpacing: 0.4,

@@ -123,7 +123,7 @@ const App = () => {
 	}
 
 	return (
-		<div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-700 dark:text-gray-200 transition-colors">
+		<div className={`flex flex-col bg-gray-50 text-gray-700 transition-colors dark:bg-gray-950 dark:text-gray-200 ${token === "" ? "min-h-screen" : "h-screen overflow-hidden"}`}>
 			{token !== "" && (
 				<a
 					href="#admin-main"
@@ -150,11 +150,11 @@ const App = () => {
 			) : (
 				<>
 					<Navbar setToken={setToken} dark={dark} setDark={setDark} />
-					<div className="flex w-full">
+					<div className="flex min-h-0 flex-1 w-full">
 						<Sidebar />
 						<main
 							id="admin-main"
-							className="flex-1 min-w-0 px-[4%] py-8 text-base"
+							className="flex-1 min-w-0 h-[calc(100vh-4rem)] overflow-y-auto overscroll-contain px-[4%] py-8 text-base"
 						>
 							<ErrorBoundary>
 								<Routes>

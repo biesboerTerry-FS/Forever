@@ -11,16 +11,19 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import Screen from "../components/Screen";
 import ProductCard from "../components/ProductCard";
+import Footer from "../components/Footer";
 import { useShop } from "../context/ShopContext";
-import { colors, spacing } from "../theme";
+import { useTheme, spacing } from "../theme";
 
 const CATEGORIES = ["All", "Women", "Men", "Kids"];
 
 export default function CollectionScreen({ navigation }) {
+	const { colors } = useTheme();
 	const { products } = useShop();
 	const { width } = useWindowDimensions();
 	const [search, setSearch] = useState("");
 	const [category, setCategory] = useState("All");
+	const [layout, setLayout] = useState("row");
 	const cardWidth = (width - spacing.md * 2 - spacing.md) / 2;
 
 	const filtered = useMemo(() => {
@@ -38,9 +41,20 @@ export default function CollectionScreen({ navigation }) {
 	return (
 		<Screen>
 			<View style={{ paddingHorizontal: spacing.md, paddingTop: spacing.sm }}>
-				<Text style={{ fontSize: 20, fontWeight: "600" }} accessibilityRole="header">
-					Shop all
-				</Text>
+				<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+					<Text style={{ fontSize: 20, fontWeight: "600", color: colors.ink }} accessibilityRole="header">
+						Shop all
+					</Text>
+					<Pressable
+						onPress={() => setLayout((value) => (value === "row" ? "grid" : "row"))}
+						accessibilityRole="button"
+						accessibilityLabel={layout === "row" ? "Switch to grid view" : "Switch to row view"}
+						hitSlop={8}
+						style={{ padding: 6 }}
+					>
+						<Ionicons name={layout === "row" ? "grid-outline" : "list-outline"} size={22} color={colors.ink} />
+					</Pressable>
+				</View>
 
 				{/* Search */}
 				<View
@@ -101,7 +115,7 @@ export default function CollectionScreen({ navigation }) {
 								}}
 							>
 								<Text
-									style={{ color: active ? "#fff" : colors.ink, fontSize: 12 }}
+									style={{ color: active ? colors.onAccent : colors.ink, fontSize: 12 }}
 								>
 									{item}
 								</Text>
@@ -119,8 +133,8 @@ export default function CollectionScreen({ navigation }) {
 			<FlatList
 				data={filtered}
 				keyExtractor={(item) => item._id}
-				numColumns={2}
-				columnWrapperStyle={{ justifyContent: "space-between" }}
+				numColumns={layout === "grid" ? 2 : 1}
+				columnWrapperStyle={layout === "grid" ? { justifyContent: "space-between" } : undefined}
 				contentContainerStyle={{
 					paddingHorizontal: spacing.md,
 					paddingBottom: 32,
@@ -128,16 +142,22 @@ export default function CollectionScreen({ navigation }) {
 				renderItem={({ item }) => (
 					<ProductCard
 						product={item}
+						variant={layout}
 						width={cardWidth}
 						onPress={() => navigation.navigate("Product", { id: item._id })}
 					/>
 				)}
 				ListEmptyComponent={
 					<View style={{ alignItems: "center", paddingVertical: 60 }}>
-						<Text style={{ fontSize: 16, fontWeight: "600" }}>No products found</Text>
+						<Text style={{ fontSize: 16, fontWeight: "600", color: colors.ink }}>No products found</Text>
 						<Text style={{ color: colors.muted, marginTop: 6, textAlign: "center" }}>
 							Try a different search term or category.
 						</Text>
+					</View>
+				}
+				ListFooterComponent={
+					<View style={{ paddingHorizontal: 2 }}>
+						<Footer navigation={navigation} />
 					</View>
 				}
 			/>
