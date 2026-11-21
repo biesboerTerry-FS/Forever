@@ -12,14 +12,13 @@ let seedPromise = null;
 const ensureDemoRequests = () => {
 	if (!seedPromise) {
 		seedPromise = (async () => {
-			const count = await workRequestModel.countDocuments();
-			if (count > 0) return;
 			const people = await employeeModel.find({
 				email: { $in: ["sam.staff@forever.test", "taylor.staff@forever.test"] },
 			}).lean();
 			const owner = people[0]?._id ? String(people[0]._id) : "demo-employee";
-			await workRequestModel.insertMany([
+			const seeds = [
 				{
+					seedKey: "portal-sam-swap",
 					type: "shift",
 					employeeId: owner,
 					employeeName: people[0]?.name || "Sam Rivera",
@@ -29,6 +28,7 @@ const ensureDemoRequests = () => {
 					demo: true,
 				},
 				{
+					seedKey: "portal-sam-timeoff",
 					type: "timeoff",
 					employeeId: owner,
 					employeeName: people[0]?.name || "Sam Rivera",
@@ -39,6 +39,7 @@ const ensureDemoRequests = () => {
 					demo: true,
 				},
 				{
+					seedKey: "portal-taylor-shift",
 					type: "shift",
 					employeeId: people[1]?._id ? String(people[1]._id) : "demo-employee-2",
 					employeeName: people[1]?.name || "Taylor Kim",
@@ -47,7 +48,16 @@ const ensureDemoRequests = () => {
 					status: "Pending",
 					demo: true,
 				},
-			]);
+			];
+			// Seed each request individually by stable key. The admin HR suite
+			// seeds its own requests too, so a simple count check is not enough.
+			for (const request of seeds) {
+				await workRequestModel.updateOne(
+					{ seedKey: request.seedKey },
+					{ $setOnInsert: { ...request, dateSubmitted: Date.now() } },
+					{ upsert: true }
+				);
+			}
 		})().catch((error) => {
 			seedPromise = null;
 			throw error;

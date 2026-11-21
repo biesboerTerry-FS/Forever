@@ -12,6 +12,7 @@ const workRequestSchema = new mongoose.Schema({
 	status: { type: String, default: "Pending", enum: ["Pending", "Approved", "Declined"] },
 	dateSubmitted: { type: Number, default: Date.now },
 	demo: { type: Boolean, default: false },
+	seedKey: { type: String, default: "", index: true },
 });
 
 const workRequestModel =

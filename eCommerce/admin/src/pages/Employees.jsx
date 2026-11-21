@@ -99,7 +99,7 @@ const Employees = ({ token, managerOnly = false }) => {
 						{shown.map((emp) => (
 							<tr key={emp._id} className="border-t dark:border-gray-800">
 								<td className="px-4 py-3 font-medium">{emp.name}</td><td className="px-4 py-3">{emp.email}</td><td className="px-4 py-3">{emp.role}</td><td className="px-4 py-3">{emp.department}</td><td className="px-4 py-3">{emp.status}</td><td className="px-4 py-3">${emp.hourlyRate ?? 0}/hr</td>
-								<td className="px-4 py-3"><div className="flex gap-3"><button onClick={()=>edit(emp)} className="text-blue-600 dark:text-blue-400">Edit</button><button onClick={()=>remove(emp._id)} className="text-red-500">Remove</button></div></td>
+								<td className="px-4 py-3"><div className="flex gap-3"><button onClick={()=>edit(emp)} className="text-blue-600 dark:text-blue-400">Edit</button><button onClick={()=>remove(emp._id)} disabled={emp.status === "Inactive"} className="text-red-500 disabled:opacity-40">{emp.status === "Inactive" ? "Inactive" : "Deactivate"}</button></div></td>
 							</tr>
 						))}
 						{shown.length === 0 && <tr><td colSpan="7" className="px-4 py-8 text-center text-gray-500">No {managerOnly?"managers":"employees"} found.</td></tr>}

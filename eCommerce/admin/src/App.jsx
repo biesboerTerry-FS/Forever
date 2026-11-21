@@ -14,6 +14,12 @@ import Payroll from "./pages/Payroll";
 import Reports from "./pages/Reports";
 import Announcements from "./pages/Announcements";
 import Messages from "./pages/Messages";
+import HrDirectory from "./pages/hr/HrDirectory";
+import HrEmployees from "./pages/hr/HrEmployees";
+import HrOrganization from "./pages/hr/HrOrganization";
+import HrPayroll from "./pages/hr/HrPayroll";
+import HrTimeOff from "./pages/hr/HrTimeOff";
+import HrPerformance from "./pages/hr/HrPerformance";
 import Login from "./components/Login";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastContainer } from "react-toastify";
@@ -153,6 +159,12 @@ const App = () => {
 									<Route path="/reports" element={<Reports token={token} />} />
 									<Route path="/announcements" element={<Announcements />} />
 									<Route path="/messages" element={<Messages token={token} />} />
+									<Route path="/hr/directory" element={<HrDirectory token={token} />} />
+									<Route path="/hr/employees" element={<HrEmployees token={token} />} />
+									<Route path="/hr/organization" element={<HrOrganization token={token} />} />
+									<Route path="/hr/payroll" element={<HrPayroll token={token} />} />
+									<Route path="/hr/timeoff" element={<HrTimeOff token={token} />} />
+									<Route path="/hr/performance" element={<HrPerformance token={token} />} />
 								</Routes>
 							</ErrorBoundary>
 						</main>

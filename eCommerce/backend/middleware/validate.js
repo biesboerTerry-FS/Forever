@@ -218,3 +218,57 @@ export const validateHrUpsert = (...requiredNames) => [
 ];
 export const validateHrRemove = [requireId];
 export const validateEmployeeProfile = capBodyStrings(200);
+
+// ---- Admin HR suite -----------------------------------------------------
+export const validateHrEmployeeUpsert = [
+	fields({
+		id: { max: 120 },
+		name: { required: true, max: 120, min: 1 },
+		email: { required: true, max: 200, email: true },
+		role: { max: 120 },
+		department: { max: 120 },
+		status: { max: 60 },
+		phone: { max: 60 },
+		address: { max: 300 },
+		hourlyRate: { type: "number", min: 0, max: 1000 },
+	}),
+	capBodyStrings(1000),
+];
+export const validateHrOrganization = [
+	fields({
+		departments: { required: true, type: "array", maxItems: 100 },
+		roles: { required: true, type: "array", maxItems: 100 },
+	}),
+	capBodyStrings(200),
+];
+export const validateHrPayrollRun = [
+	fields({
+		employeeId: { required: true, max: 120 },
+		periodStart: {
+			required: true,
+			max: 10,
+			pattern: /^\d{4}-\d{2}-\d{2}$/,
+			message: "Use YYYY-MM-DD for the period start.",
+		},
+		periodEnd: {
+			required: true,
+			max: 10,
+			pattern: /^\d{4}-\d{2}-\d{2}$/,
+			message: "Use YYYY-MM-DD for the period end.",
+		},
+		hours: { type: "number", min: 0, max: 1000 },
+		hourlyRate: { type: "number", min: 0, max: 1000 },
+		bonus: { type: "number", min: 0, max: 100000 },
+		deductions: { type: "number", min: 0, max: 100000 },
+	}),
+	capBodyStrings(500),
+];
+export const validateHrPerformanceNote = [
+	fields({
+		employeeId: { required: true, max: 120 },
+		text: { required: true, max: 1000, min: 1, message: "Note text is required." },
+		author: { max: 120 },
+		date: { max: 10 },
+	}),
+	capBodyStrings(1000),
+];

@@ -14,6 +14,7 @@ const payrollSchema = new mongoose.Schema({
 	status: { type: String, default: "Draft" }, // Draft, Approved, Paid
 	notes: { type: String, default: "" },
 	createdAt: { type: Number, default: () => Date.now() },
+	seedKey: { type: String, default: "", index: true },
 });
 
 const payrollModel =

@@ -76,6 +76,46 @@ const Sidebar = () => {
 					<p className="hidden md:block">Messages</p>
 				</NavLink>
 
+				<div data-testid="hr-nav" className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-800">
+					<p className="hidden px-3 mb-1 text-xs font-medium tracking-wide text-gray-400 uppercase md:block dark:text-gray-500">Human Resources</p>
+					<NavLink className={linkClass} to="/hr/directory">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+						</svg>
+						<p className="hidden md:block">HR Directory</p>
+					</NavLink>
+					<NavLink className={linkClass} to="/hr/employees">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-9.75 3.75a4.5 4.5 0 019 0m-9 0v.75c0 1.24 1.006 2.25 2.25 2.25h4.5c1.244 0 2.25-1.01 2.25-2.25v-.75m-4.5-12a2.625 2.625 0 110 5.25 2.625 2.625 0 010-5.25z" />
+						</svg>
+						<p className="hidden md:block">Manage Employees</p>
+					</NavLink>
+					<NavLink className={linkClass} to="/hr/organization">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+						</svg>
+						<p className="hidden md:block">Roles &amp; Departments</p>
+					</NavLink>
+					<NavLink className={linkClass} to="/hr/payroll">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+						</svg>
+						<p className="hidden md:block">Payroll</p>
+					</NavLink>
+					<NavLink className={linkClass} to="/hr/timeoff">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6.75h.008v.008H12V10.5zm0 3.75h.008v.008H12V14.25zm0 3.75h.008v.008H12V18zm3.75-7.5h.008v.008h-.008V10.5zm0 3.75h.008v.008h-.008V14.25z" />
+						</svg>
+						<p className="hidden md:block">Time-off approvals</p>
+					</NavLink>
+					<NavLink className={linkClass} to="/hr/performance">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.6" stroke="currentColor" className="w-5 h-5 shrink-0" aria-hidden="true">
+							<path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+						</svg>
+						<p className="hidden md:block">Performance notes</p>
+					</NavLink>
+				</div>
+
 				<div className="pt-3 mt-3 border-t border-gray-200 dark:border-gray-800">
 					<p className="hidden px-3 mb-1 text-xs font-medium tracking-wide text-gray-400 uppercase md:block dark:text-gray-500">Team & Ops</p>
 				</div>

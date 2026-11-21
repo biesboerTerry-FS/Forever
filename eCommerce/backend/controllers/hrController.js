@@ -4,8 +4,9 @@ import learningModel from "../models/learningModel.js";
 import payrollModel from "../models/payrollModel.js";
 import orderModel from "../models/orderModel.js";
 import productModel from "../models/productModel.js";
+import { ensureHrDemoData } from "../utils/hrDemoData.js";
 
-const calcPayroll = (data) => {
+export const calcPayroll = (data) => {
 	const hours = Number(data.hours || 0);
 	const rate = Number(data.hourlyRate || 0);
 	const bonus = Number(data.bonus || 0);
@@ -18,9 +19,21 @@ const calcPayroll = (data) => {
 // Employees
 export const listEmployees = async (req, res) => {
 	try {
-		const { role } = req.query || {};
+		await ensureHrDemoData();
+		const { role, department, status, q } = req.query || {};
 		const filter = {};
-		if (role) filter.role = role;
+		if (role) filter.role = String(role);
+		if (department) filter.department = String(department);
+		if (status) filter.status = String(status);
+		if (typeof q === "string" && q.trim()) {
+			const escaped = q.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+			filter.$or = [
+				{ name: { $regex: escaped, $options: "i" } },
+				{ email: { $regex: escaped, $options: "i" } },
+				{ role: { $regex: escaped, $options: "i" } },
+				{ department: { $regex: escaped, $options: "i" } },
+			];
+		}
 		const employees = await employeeModel.find(filter).sort({ name: 1 });
 		res.json({ success: true, employees });
 	} catch (error) {
@@ -47,19 +60,31 @@ export const upsertEmployee = async (req, res) => {
 	}
 };
 
+// Employees are never hard-deleted: deactivation preserves payroll, schedule
+// and note history while removing the person from the active roster.
 export const removeEmployee = async (req, res) => {
 	try {
 		const { id } = req.body || {};
-		await employeeModel.findByIdAndDelete(id);
-		res.json({ success: true, message: "Employee removed." });
+		const employee = await employeeModel.findByIdAndUpdate(
+			id,
+			{ status: "Inactive", available: false },
+			{ new: true, runValidators: true }
+		);
+		if (!employee) {
+			return res.json({ success: false, message: "Employee not found." });
+		}
+		res.json({ success: true, employee, message: "Employee deactivated." });
 	} catch (error) {
 		res.json({ success: false, message: error.message });
 	}
 };
 
+export const deactivateEmployee = removeEmployee;
+
 // Schedules
 export const listSchedules = async (req, res) => {
 	try {
+		await ensureHrDemoData();
 		const schedules = await scheduleModel.find({}).sort({ date: 1, startTime: 1 });
 		res.json({ success: true, schedules });
 	} catch (error) {
@@ -142,7 +167,10 @@ export const removeLearning = async (req, res) => {
 // Payroll
 export const listPayroll = async (req, res) => {
 	try {
-		const payroll = await payrollModel.find({}).sort({ periodEnd: -1, createdAt: -1 });
+		await ensureHrDemoData();
+		const { employeeId } = req.query || {};
+		const filter = employeeId ? { employeeId: String(employeeId) } : {};
+		const payroll = await payrollModel.find(filter).sort({ periodEnd: -1, createdAt: -1 });
 		res.json({ success: true, payroll });
 	} catch (error) {
 		res.json({ success: false, message: error.message });
