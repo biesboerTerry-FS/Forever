@@ -58,18 +58,29 @@ const App = () => {
 	useEffect(() => {
 		let active = true;
 		const signIn = async () => {
-			try {
-				const response = await axios.post(backendUrl + "/api/admin/demo");
-				if (active && response.data?.success && response.data.token) {
-					setToken(response.data.token);
-				} else if (active) {
-					setToken("");
+			// Serverless cold starts can occasionally stall a request. Retry a
+			// few times with a hard timeout so the panel never hangs forever.
+			for (let attempt = 0; attempt < 3 && active; attempt += 1) {
+				try {
+					const response = await axios.post(backendUrl + "/api/admin/demo", null, {
+						timeout: 8000,
+					});
+					if (response.data?.success && response.data.token) {
+						if (active) {
+							setToken(response.data.token);
+							setAuthChecking(false);
+						}
+						return;
+					}
+				} catch (error) {
+					if (attempt === 2) {
+						console.warn("Admin demo sign-in unavailable:", error?.message || error);
+					}
 				}
-			} catch (error) {
-				console.warn("Admin demo sign-in unavailable:", error?.message || error);
-				if (active) setToken("");
-			} finally {
-				if (active) setAuthChecking(false);
+			}
+			if (active) {
+				setToken("");
+				setAuthChecking(false);
 			}
 		};
 		signIn();
