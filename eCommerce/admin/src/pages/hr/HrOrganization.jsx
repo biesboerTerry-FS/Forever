@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { fetchOrganization, saveOrganization } from "../../utils/hr";
+import { fetchOrganization, loadHrOrganization, saveOrganization } from "../../utils/hr";
 
 const LabelList = ({ title, testId, addTestId, items, value, onValue, onAdd, onRemove }) => (
 	<div className="p-5 bg-white rounded-2xl shadow-sm dark:bg-gray-900 dark:ring-1 dark:ring-gray-800">
@@ -29,11 +29,13 @@ const LabelList = ({ title, testId, addTestId, items, value, onValue, onAdd, onR
 );
 
 const HrOrganization = ({ token }) => {
-	const [departments, setDepartments] = useState([]);
-	const [roles, setRoles] = useState([]);
+	const initial = loadHrOrganization();
+	const [departments, setDepartments] = useState(initial.departments || []);
+	const [roles, setRoles] = useState(initial.roles || []);
 	const [departmentInput, setDepartmentInput] = useState("");
 	const [roleInput, setRoleInput] = useState("");
 	const [busy, setBusy] = useState(false);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		let active = true;
@@ -41,6 +43,7 @@ const HrOrganization = ({ token }) => {
 			if (!active) return;
 			setDepartments(result.departments || []);
 			setRoles(result.roles || []);
+			setLoading(false);
 		});
 		return () => { active = false; };
 	}, [token]);
@@ -77,10 +80,10 @@ const HrOrganization = ({ token }) => {
 					type="button"
 					data-testid="hr-org-save"
 					onClick={save}
-					disabled={busy}
+					disabled={busy || loading}
 					className="px-4 py-2 text-sm text-white bg-gray-900 rounded-lg disabled:opacity-60 dark:bg-white dark:text-gray-900"
 				>
-					Save changes
+					{loading ? "Loading…" : "Save changes"}
 				</button>
 			</div>
 
